@@ -1,8 +1,10 @@
 # lock the git
 test/
 pubspec.lock
-ios/
 android/
+ios/
+!Info.plist
+!GoogleService-Info.plist
 README.md
 .metadata
 
