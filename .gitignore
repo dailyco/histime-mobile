@@ -3,6 +3,7 @@ test/
 pubspec.lock
 ios/
 android/
+README.md
 .metadata
 
 # Miscellaneous
