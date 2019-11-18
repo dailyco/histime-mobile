@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.push(context, MaterialPageRoute(builder: (context)
                     => HomePage()));
             },
-          )
+          ),
         ],
       ),
     ) ;
