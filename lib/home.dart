@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    final _mlbody = Container(
+    final _docbody = Container(
     );
 
     return SafeArea(
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _top,
-            is_home? _homebody : _mlbody,
+            is_home? _homebody : _docbody,
           ],
         ),
       ),
