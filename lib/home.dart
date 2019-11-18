@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool is_home = true;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +34,16 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.home, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                is_home = true;
+
+              },
             ),
             IconButton(
               icon: Icon(Icons.storage, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                is_home = false;
+              },
             ),
           ],
         ),
@@ -122,7 +128,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    final _body = Container(
+    final _homebody = Container(
       child: ListView.builder(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
@@ -133,6 +139,9 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
+    final _mlbody = Container(
+    );
+
     return SafeArea(
       child: Container(
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -140,7 +149,7 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _top,
-            _body,
+            is_home? _homebody : _mlbody,
           ],
         ),
       ),
