@@ -35,14 +35,17 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: Icon(Icons.home, color: Colors.black),
               onPressed: () {
-                is_home = true;
-
+                setState(() {
+                  is_home = true;
+                });
               },
             ),
             IconButton(
               icon: Icon(Icons.storage, color: Colors.black),
               onPressed: () {
-                is_home = false;
+                setState(() {
+                  is_home = false;
+                });
               },
             ),
           ],
