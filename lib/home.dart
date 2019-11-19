@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +23,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: _mybody(),
       bottomNavigationBar: _makeBottom(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Color(0xFFFFCA55),
+        onPressed: () => _dialog(),
+      ),
     );
   }
 
@@ -156,6 +162,58 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  TextEditingController tableNameController ;
+  @override
+  initState() {
+    tableNameController = TextEditingController() ;
+    super.initState() ;
+  }
+
+  void _dialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog (
+          title: Text(
+            '시간표 만들기',
+            style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold),
+          ),
+          content: Card(
+            color: Colors.transparent,
+            elevation: 0.0,
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: tableNameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    labelText: '새로운 시간표의 이름을 입력하세요',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('취소'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            FlatButton(
+              child: Text(
+                  '확인',
+                  style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)
+              ),
+              onPressed: () {
+                //시간표 이름 리스트에 추가
+                //만들기 창으로 이동
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
