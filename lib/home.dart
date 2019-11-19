@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mad_histime/createTable.dart';
 
 class HomePage extends StatefulWidget {
   final GoogleSignIn googleSignIn;
@@ -209,6 +210,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 //시간표 이름 리스트에 추가
                 //만들기 창으로 이동
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTablePage())) ;
               },
             ),
           ],
