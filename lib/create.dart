@@ -116,6 +116,8 @@ class CreatePageState extends State<CreatePage> {
     );
   }
 
+  TextEditingController searchController ;
+
   Widget _searchpanel() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,21 +136,57 @@ class CreatePageState extends State<CreatePage> {
             ),
           ],
         ),
-        SizedBox(height: 10,),
+        SizedBox(height: 10),
         Container(
           color: Color(0xFF225B95),
           child: SizedBox(
             height: 45,
             child: Container(
-              padding: EdgeInsets.all(10),
               child: Row(
                 children: <Widget>[
                   IconButton(
                     icon: Icon(Icons.favorite),
+                    color: Color(0xFFFFCA55),
                     onPressed: () {},
-                  )
+                  ),
+                  SizedBox(
+                    width: 180,
+                    height: 30,
+                    child: CupertinoTextField(
+                      controller: searchController,
+                      placeholder: "과목명 혹은 교수님명",
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Color(0xFFFFCA55)),
+                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  SizedBox(
+                    width: 60,
+                    height: 30,
+                    child: RaisedButton(
+                      child: Text('검색'),
+                      onPressed: () {},
+                      color: Color(0xFFFFCA55),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                  SizedBox(width: 7),
+                  SizedBox(
+                    width: 60,
+                    height: 30,
+                    child: RaisedButton(
+                      child: Text('필터'),
+                      onPressed: () {},
+                      color: Color(0xFFFFCA55),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
                 ],
               ),
+
             )
           ),
         ),
