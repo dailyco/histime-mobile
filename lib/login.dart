@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
               print(s);
               if (_success) {
                 Navigator.push(context, MaterialPageRoute(builder: (context)
-                      => HomePage(user: _user, googleSignIn: _googleSignIn, auth: _auth,)));
+                      => HomePage()));
               }
             });
           },
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
               print(s);
               if (_success) {
                 Navigator.push(context, MaterialPageRoute(builder: (context)
-                      => HomePage(user: _user, googleSignIn: _googleSignIn, auth: _auth,)));
+                      => HomePage()));
               }
             });
           },
@@ -191,4 +191,9 @@ class _LoginPageState extends State<LoginPage> {
 
     return 'signInWithGoogle succeeded: $user';
   }
+}
+
+signOut() async {
+  await _googleSignIn.signOut();
+  await _auth.signOut();
 }
