@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class CreateTablePage extends StatefulWidget {
   @override
@@ -229,6 +230,8 @@ class CreateTablePageState extends State<CreateTablePage> {
   }
 
   Widget _searchbody() {
-    return Container();
+    return SlidingUpPanel(
+      panel: Center(child: Text("Search Selection"),),
+    );
   }
 }
