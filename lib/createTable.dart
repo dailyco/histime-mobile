@@ -231,7 +231,7 @@ class CreateTablePageState extends State<CreateTablePage> {
 
   Widget _searchbody() {
     return SlidingUpPanel(
-      panel: Center(child: Text("Search Selection"),),
+      panel: Center(child: Text("Search Selection")),
     );
   }
 }
