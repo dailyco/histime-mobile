@@ -1,18 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mad_histime/createTable.dart';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
-class HomePage extends StatefulWidget {
-  final GoogleSignIn googleSignIn;
-  final FirebaseAuth auth;
-  final FirebaseUser user;
+import 'login.dart';
 
-  HomePage({Key key, @required this.user, @required this.googleSignIn, @required this.auth}) : super(key: key);
+class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -104,6 +99,7 @@ class _HomePageState extends State<HomePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
             child: Text('Logout'),
             onPressed: () {
+              signOut();
               Navigator.pop(context);
             },
           ),
@@ -127,7 +123,7 @@ class _HomePageState extends State<HomePage> {
           subtitle: Row(
             children: <Widget>[
               Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
-              Text(_credit[index].toString(), style: TextStyle(color: Colors.white))
+              Text("credit : " + _credit[index].toString(), style: TextStyle(color: Colors.white))
             ],
           ),
           trailing: Container(
@@ -172,13 +168,8 @@ class _HomePageState extends State<HomePage> {
     }
 
   TextEditingController tableNameController ;
-  @override
-  initState() {
-    tableNameController = TextEditingController() ;
-    super.initState() ;
-  }
 
-  void _dialog() {
+  _dialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
