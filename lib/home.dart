@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFFFFCA55),
         onPressed: () => _dialog(),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
@@ -62,6 +63,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _mybody() {
+    final _names = <String>["예비 시간표", "예비1", "예비2", "예비3", "예비4", "예비5"];
+    final _credit = <int>[18, 21, 20, 19, 18, 22];
+
     final _logo = Column(
       children: <Widget>[
         Image.asset(
@@ -105,66 +109,65 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    final makeListTile = ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        leading: Container(
-          padding: EdgeInsets.only(right: 12.0),
-          decoration: new BoxDecoration(
-              border: new Border(
-                  right: new BorderSide(width: 1.0, color: Colors.white24))),
-          child: Icon(Icons.autorenew, color: Colors.white),
+    _makeListTile(int index) {
+      return Container(
+        margin:  EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(color: Color(0xFF9CBADF)),
+        child: ListTile(
+          leading: Container(
+            padding: EdgeInsets.only(right: 12.0),
+            child: Icon(Icons.menu, color: Colors.white),
+          ),
+          title: Text(
+            _names[index],
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Row(
+            children: <Widget>[
+              Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
+              Text(_credit[index].toString(), style: TextStyle(color: Colors.white))
+            ],
+          ),
+          trailing: Container(
+            padding: EdgeInsets.only(right: 10.0),
+            child: IconButton(
+                icon: Icon(Icons.edit, color: Colors.white, size: 25,),
+                onPressed: () {
+
+                }),
+            ),
+          ),
+        );
+      }
+
+      final _homebody = Container(
+        padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: _names.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _makeListTile(index);
+          },
         ),
-        title: Text(
-          "Introduction to Driving",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      );
+
+      final _docbody = Container(
+      );
+
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _top,
+              is_home? _homebody : _docbody,
+            ],
+          ),
         ),
-        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-
-        subtitle: Row(
-          children: <Widget>[
-            Icon(Icons.linear_scale, color: Colors.yellowAccent),
-            Text(" Intermediate", style: TextStyle(color: Colors.white))
-          ],
-        ),
-        trailing:
-        Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0));
-
-    final makeCard = Card(
-      elevation: 8.0,
-      margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        decoration: BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-        child: makeListTile,
-      ),
-    );
-
-    final _homebody = Container(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: 10,
-        itemBuilder: (BuildContext context, int index) {
-          return makeCard;
-        },
-      ),
-    );
-
-    final _docbody = Container(
-    );
-
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            _top,
-            is_home? _homebody : _docbody,
-          ],
-        ),
-      ),
-    );
-  }
+      );
+    }
 
   TextEditingController tableNameController ;
   @override
@@ -179,7 +182,7 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return CupertinoAlertDialog (
           title: Text(
-            '시간표 만들기',
+            '새로운 시간표 만들기',
             style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold),
           ),
           content: Card(
@@ -187,11 +190,12 @@ class _HomePageState extends State<HomePage> {
             elevation: 0.0,
             child: Column(
               children: <Widget>[
+                SizedBox(height: 8,),
                 TextField(
                   controller: tableNameController,
                   decoration: InputDecoration(
                     filled: true,
-                    labelText: '새로운 시간표의 이름을 입력하세요',
+                    hintText: '시간표의 이름을 입력하세요',
                   ),
                 ),
               ],
