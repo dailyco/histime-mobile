@@ -184,12 +184,10 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: <Widget>[
                 SizedBox(height: 8,),
-                TextField(
+                CupertinoTextField(
                   controller: tableNameController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    hintText: '시간표의 이름을 입력하세요',
-                  ),
+                  placeholder: "시간표의 이름을 입력하세요",
+                  decoration: BoxDecoration(color: Colors.white30)
                 ),
               ],
             ),
@@ -197,7 +195,9 @@ class _HomePageState extends State<HomePage> {
           actions: <Widget>[
             FlatButton(
               child: Text('취소'),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
             FlatButton(
               child: Text(
@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)
               ),
               onPressed: () {
-                //TODO: 시간표 이름 리스트에 추가해야함
+                Navigator.pop(context) ;
                 Navigator.push(context, MaterialPageRoute(builder: (context) => CreatePage())) ;
               },
             ),
