@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mad_histime/createTable.dart';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+
 class HomePage extends StatefulWidget {
   final GoogleSignIn googleSignIn;
   final FirebaseAuth auth;
