@@ -212,8 +212,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)
               ),
               onPressed: () {
-                //시간표 이름 리스트에 추가
-                //만들기 창으로 이동
+                //TODO: 시간표 이름 리스트에 추가해야함
                 Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTablePage())) ;
               },
             ),

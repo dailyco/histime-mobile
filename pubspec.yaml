@@ -10,6 +10,7 @@ dependencies:
 
   cupertino_icons: ^0.1.2
   flutter_signin_button: ^1.0.0
+  sliding_up_panel: ^0.3.6
 
   # for firestore
   google_sign_in: ^4.0.11
