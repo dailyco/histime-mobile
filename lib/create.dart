@@ -8,17 +8,34 @@ class CreatePage extends StatefulWidget {
 }
 
 class CreatePageState extends State<CreatePage> {
+
+  final double _initFabHeight = 120.0;
+  double _fabHeight;
+  double _panelHeightOpen = 575.0;
+  double _panelHeightClosed = 95.0;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
+    return Material(
+      child: Stack(
+        alignment: Alignment.topCenter,
         children: <Widget>[
-          _topbody(),
-          _tablebody(),
-          _buttonbody(),
-
+          SlidingUpPanel(
+            maxHeight: _panelHeightOpen,
+            minHeight: _panelHeightClosed,
+            parallaxEnabled: true,
+            parallaxOffset: .3,
+            body: Column(
+              children: <Widget>[
+                _topbody(),
+                _tablebody(),
+                _buttonbody()
+              ],
+            ),
+            panel: _searchpanel(),
+          )
         ],
-      )
+      ),
     );
   }
 
@@ -207,31 +224,63 @@ class CreatePageState extends State<CreatePage> {
   }
 
   Widget _buttonbody() {
-    return SafeArea(
-      child: ButtonBar(
-        alignment: MainAxisAlignment.center,
-        children: <Widget>[
-          RaisedButton(
-            child: Text('저 장', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            color: Color(0xFF225B95),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
-            onPressed: () {},
-          ),
-          OutlineButton(
-            child: Text('돌아가기', style: TextStyle(fontWeight: FontWeight.bold)),
-            color: Colors.white,
-            borderSide: BorderSide(color: Color(0xFF225B95)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
-            onPressed: () => Navigator.pop(context),
-          )
-        ],
-      ),
+    return ButtonBar(
+      alignment: MainAxisAlignment.center,
+      children: <Widget>[
+        RaisedButton(
+          child: Text('저 장', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          color: Color(0xFF225B95),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
+          onPressed: () {},
+        ),
+        OutlineButton(
+          child: Text('돌아가기', style: TextStyle(fontWeight: FontWeight.bold)),
+          color: Colors.white,
+          borderSide: BorderSide(color: Color(0xFF225B95)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
+          onPressed: () => Navigator.pop(context),
+        )
+      ],
     );
   }
 
-  Widget _searchbody() {
-    return SlidingUpPanel(
-      panel: Center(child: Text("Search Selection")),
+  Widget _searchpanel() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 30,
+              height: 5,
+              decoration: BoxDecoration(
+                  color: Color(0xFF225B95),
+                  borderRadius: BorderRadius.all(Radius.circular(12.0))
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10,),
+        Container(
+          color: Color(0xFF225B95),
+          child: SizedBox(
+            height: 45,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.favorite),
+                    onPressed: () {},
+                  )
+                ],
+              ),
+            )
+          ),
+        ),
+      ],
     );
   }
 }
