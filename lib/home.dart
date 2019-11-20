@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mad_histime/createTable.dart';
+import 'package:mad_histime/create.dart';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
               ),
               onPressed: () {
                 //TODO: 시간표 이름 리스트에 추가해야함
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTablePage())) ;
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CreatePage())) ;
               },
             ),
           ],

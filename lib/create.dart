@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class CreateTablePage extends StatefulWidget {
+class CreatePage extends StatefulWidget {
   @override
-  CreateTablePageState createState() => CreateTablePageState() ;
+  CreatePageState createState() => CreatePageState() ;
 }
 
-class CreateTablePageState extends State<CreateTablePage> {
+class CreatePageState extends State<CreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +16,7 @@ class CreateTablePageState extends State<CreateTablePage> {
           _topbody(),
           _tablebody(),
           _buttonbody(),
-          _searchbody(),
+
         ],
       )
     );
