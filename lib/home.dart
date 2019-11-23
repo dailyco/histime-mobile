@@ -24,9 +24,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Color(0xFFFFCA55),
-        onPressed: () => _dialog(),
+        onPressed: () => is_home? _dialog() : _dialog(),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+//      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
@@ -60,8 +60,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _mybody() {
-    final _names = <String>["예비 시간표", "예비1", "예비2", "예비3", "예비4", "예비5"];
-    final _credit = <int>[18, 21, 20, 19, 18, 22];
+    final _names = <String>["예비 시간표", "예비1", "예비2", "예비3", "예비4", "예비5", "예비6"];
 
     final _logo = Column(
       children: <Widget>[
@@ -107,7 +106,7 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    _makeListTile(int index) {
+    _makeListTile(String name) {
       return Container(
         margin:  EdgeInsets.symmetric(vertical: 8.0),
         decoration: BoxDecoration(color: Color(0xFF9CBADF)),
@@ -117,13 +116,13 @@ class _HomePageState extends State<HomePage> {
             child: Icon(Icons.menu, color: Colors.white),
           ),
           title: Text(
-            _names[index],
+            name,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           subtitle: Row(
             children: <Widget>[
               Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
-              Text("credit : " + _credit[index].toString(), style: TextStyle(color: Colors.white))
+              Text("credit : 18", style: TextStyle(color: Colors.white))
             ],
           ),
           trailing: Container(
@@ -140,13 +139,13 @@ class _HomePageState extends State<HomePage> {
 
       final _homebody = Container(
         padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
-        child: ListView.builder(
+        child: ListView(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: _names.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _makeListTile(index);
-          },
+          addAutomaticKeepAlives: false,
+          children: _names.map((name) {
+            return _makeListTile(name);
+          }).toList(),
         ),
       );
 
@@ -160,7 +159,9 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               _top,
-              is_home? _homebody : _docbody,
+              Expanded(
+                child: is_home? _homebody : _docbody,
+              ),
             ],
           ),
         ),

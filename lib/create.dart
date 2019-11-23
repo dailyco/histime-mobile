@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 
 import 'login.dart';
 import 'table.dart';
@@ -15,29 +16,50 @@ class CreatePageState extends State<CreatePage> {
   final double _initFabHeight = 120.0;
   double _fabHeight;
   double _panelHeightOpen = 575.0;
-  double _panelHeightClosed = 95.0;
+  double _panelHeightClosed = 30.0;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: <Widget>[
-          SlidingUpPanel(
-            maxHeight: _panelHeightOpen,
-            minHeight: _panelHeightClosed,
-            parallaxEnabled: true,
-            parallaxOffset: .3,
-            body: Column(
-              children: <Widget>[
-                _topbody(),
-                tablebody(),
-                _buttonbody()
-              ],
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            prefix0.SlidingUpPanel(
+              maxHeight: _panelHeightOpen,
+              minHeight: _panelHeightClosed,
+              parallaxEnabled: true,
+              panel: _searchpanel(),
+              collapsed: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF225B95),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                width: 100,
+                height: _panelHeightClosed,
+                child: Center(
+                  child: Text(
+                    "Search",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              body: Container(
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: Column(
+                  children: <Widget>[
+                    _topbody(),
+                    tablebody(),
+                    _buttonbody(),
+                  ],
+                ),
+              ),
             ),
-            panel: _searchpanel(),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -87,12 +109,7 @@ class CreatePageState extends State<CreatePage> {
       ],
     );
 
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: _top
-      ),
-    );
+    return _top;
   }
 
   Widget _buttonbody() {
@@ -120,23 +137,7 @@ class CreatePageState extends State<CreatePage> {
 
   Widget _searchpanel() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: 30,
-              height: 5,
-              decoration: BoxDecoration(
-                  color: Color(0xFF225B95),
-                  borderRadius: BorderRadius.all(Radius.circular(12.0))
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
         Container(
           color: Color(0xFF225B95),
           child: SizedBox(
@@ -192,5 +193,28 @@ class CreatePageState extends State<CreatePage> {
         ),
       ],
     );
+  }
+}
+
+class TableHeader extends SliverPersistentHeaderDelegate {
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Color(0xFF225B95),
+      child: Center(
+        child: Text('Name'),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 50.0;
+
+  @override
+  double get minExtent => 50.0;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
