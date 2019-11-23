@@ -149,6 +149,10 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
+      final _emptybox = SizedBox(
+        height: 85,
+      );
+
       final _docbody = Container(
       );
 
@@ -162,6 +166,7 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: is_home? _homebody : _docbody,
               ),
+              _emptybox,
             ],
           ),
         ),

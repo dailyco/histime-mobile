@@ -33,12 +33,15 @@ class CreatePage extends StatefulWidget {
 }
 
 class CreatePageState extends State<CreatePage> {
-
-  double _panelHeightOpen = 575.0;
+  double _panelHeightOpen = 330.0;
   double _panelHeightClosed = 30.0;
+  double _oneTimeHeight = 50.0;
+  double _width;
 
   @override
   Widget build(BuildContext context) {
+    _width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -47,16 +50,18 @@ class CreatePageState extends State<CreatePage> {
             prefix0.SlidingUpPanel(
               maxHeight: _panelHeightOpen,
               minHeight: _panelHeightClosed,
-              parallaxEnabled: true,
+//              parallaxEnabled: true,
+//              parallaxOffset: 1,
               panel: _searchpanel(),
-              collapsed: _panel_header,
+//              collapsed: _panelheader(),
               body: Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Column(
                   children: <Widget>[
                     _topbody(),
-                    tablebody(),
+                    _table(),
                     _buttonbody(),
+                    _emptybox(),
                   ],
                 ),
               ),
@@ -67,7 +72,131 @@ class CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _panel_header() {
+  Widget _table() {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Color(0xFF225B95)),
+          ),
+          child: Column(
+            children: <Widget>[
+              _tableTitle(),
+              _tableDay(),
+              _tableBody(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tableBody() {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          _tableTime(),
+//        tablebody(),
+        ],
+      ),
+    );
+  }
+
+  Widget _tableTime() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      decoration: BoxDecoration(
+        border: Border(right: BorderSide(color: Color(0xFF225B95)),),
+      ),
+      child: Column(
+        children: <Widget>[
+          _time("1"),
+          _time("2"),
+          _time("3"),
+          _time("4"),
+          _time("5"),
+          _time("6"),
+          _time("7"),
+          _time("8"),
+          _time("9"),
+          _time("10"),
+          _time("11"),
+        ],
+      ),
+    );
+  }
+
+  Widget _time(String time) {
+    return SizedBox(
+      width: (_width - 20) / 13,
+      height: _oneTimeHeight,
+      child: Center(
+        child: Text(time, style: TextStyle(fontSize: 15,),),
+      )
+    );
+  }
+
+  Widget _tableDay() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF225B95)),),
+      ),
+      child: Row(
+        children: <Widget>[
+          _day(""),
+          _day("월"),
+          _day("화"),
+          _day("수"),
+          _day("목"),
+          _day("금"),
+          _day("토"),
+        ],
+      ),
+    );
+  }
+
+  Widget _day(String day) {
+    return Expanded(
+      flex: day == ""? 1 : 2,
+      child: Text(day, textAlign: TextAlign.center, style: TextStyle(fontSize: 15),),
+    );
+  }
+
+  Widget _tableTitle() {
+    return Container(
+      color: Color(0xFF225B95),
+      child: Row(
+        children: <Widget>[
+          SizedBox(width: 10,),
+          Expanded(
+            child: Text("예비 시간표1", style: TextStyle(color: Colors.white, fontSize: 17),),
+          ),
+          IconButton(
+            icon: Icon(Icons.view_list),
+            color: Color(0xFFFFCA55),
+            iconSize: 25,
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            color: Color(0xFFFFCA55),
+            iconSize: 25,
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptybox() {
+    return SizedBox(
+      height: _panelHeightClosed + 20,
+    );
+  }
+
+  Widget _panelheader() {
     return  Container(
       decoration: BoxDecoration(
         color: Color(0xFF225B95),
@@ -146,7 +275,7 @@ class CreatePageState extends State<CreatePage> {
           onPressed: () {},
         ),
         OutlineButton(
-          child: Text('돌아가기', style: TextStyle(fontWeight: FontWeight.bold)),
+          child: Text('돌아가기', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF225B95))),
           color: Colors.white,
           borderSide: BorderSide(color: Color(0xFF225B95)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
@@ -161,57 +290,58 @@ class CreatePageState extends State<CreatePage> {
   Widget _searchpanel() {
     return Column(
       children: <Widget>[
+        _panelheader(),
         Container(
           color: Color(0xFF225B95),
-          child: SizedBox(
-            height: 40,
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.favorite),
-                    color: Color(0xFFFFCA55),
-                    onPressed: () {},
-                  ),
-                  SizedBox(
-                    width: 200,
-                    height: 30,
-                    child: CupertinoTextField(
-                      controller: searchController,
-                      placeholder: "과목명 혹은 교수님명",
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Color(0xFFFFCA55)),
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
+          child: Container(
+            margin: EdgeInsets.fromLTRB(0, 2, 5, 2),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.favorite),
+                  color: Color(0xFFFFCA55),
+                  onPressed: () {},
+                ),
+                Expanded(
+                  child: CupertinoTextField(
+                    controller: searchController,
+                    placeholder: "과목명 혹은 교수님명",
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Color(0xFFFFCA55),),
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
                   ),
-                  SizedBox(width: 5),
-                  IconButton(
-                    icon: Icon(Icons.tune),
-                    onPressed: () {},
+                ),
+                IconButton(
+                  icon: Icon(Icons.tune),
+                  onPressed: () {},
+                  color: Color(0xFFFFCA55),
+                  iconSize: 25,
+                ),
+                SizedBox(
+                  width: 70,
+                  child: RaisedButton(
                     color: Color(0xFFFFCA55),
-                    iconSize: 25,
+                    child: Text('검색', style: TextStyle(color: Colors.white)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    onPressed: () {},
                   ),
-                  SizedBox(
-                    width: 60,
-                    height: 30,
-                    child: RaisedButton(
-                      child: Text('검색', style: TextStyle(color: Colors.white)),
-                      onPressed: () {},
-                      color: Color(0xFFFFCA55),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                  ),
-                ],
-              ),
-            )
+                ),
+              ],
+            ),
           ),
         ),
-        SizedBox(
-//          child: _subjectList(context, dummySubjects),
+        Expanded(
+          child: _subjectList(context, dummySubjects),
         ),
       ],
+    );
+  }
+
+  Widget _subjectList(BuildContext context, List<Map> snapshot) {
+    return ListView(
+      children: snapshot.map((data) => _subjectListItem(context, data)).toList(),
     );
   }
 
@@ -246,11 +376,6 @@ class TableHeader extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
     return false;
-  }
-  Widget _subjectList(BuildContext context, List<Map> snapshot) {
-    return ListView(
-      children: snapshot.map((data) => _subjectListItem(context, data)).toList(),
-    );
   }
 }
 
