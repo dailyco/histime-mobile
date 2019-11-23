@@ -18,12 +18,12 @@ final dummySubjects = [
     "credit": 3,
   },
   {"code": "ECE20010-02",
-    "name": "김유진바보",
+    "name": "김유진 바보",
     "prof": "메롱",
-    "english": 21,
+    "english": 0,
     "type": "멍청이",
     "time": "오롤롤",
-    "credit": 4,
+    "credit": 3,
   },
 ];
 
@@ -49,7 +49,7 @@ class CreatePageState extends State<CreatePage> {
               minHeight: _panelHeightClosed,
               parallaxEnabled: true,
               panel: _searchpanel(),
-              collapsed: _panel_header,
+              collapsed: _panelheader(),
               body: Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Column(
@@ -67,7 +67,7 @@ class CreatePageState extends State<CreatePage> {
     );
   }
 
-  Widget _panel_header() {
+  Widget _panelheader() {
     return  Container(
       decoration: BoxDecoration(
         color: Color(0xFF225B95),
@@ -131,7 +131,6 @@ class CreatePageState extends State<CreatePage> {
         ),
       ],
     );
-
     return _top;
   }
 
@@ -161,66 +160,125 @@ class CreatePageState extends State<CreatePage> {
   Widget _searchpanel() {
     return Column(
       children: <Widget>[
-        Container(
-          color: Color(0xFF225B95),
-          child: SizedBox(
-            height: 40,
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.favorite),
-                    color: Color(0xFFFFCA55),
-                    onPressed: () {},
-                  ),
-                  SizedBox(
-                    width: 200,
-                    height: 30,
-                    child: CupertinoTextField(
-                      controller: searchController,
-                      placeholder: "과목명 혹은 교수님명",
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Color(0xFFFFCA55)),
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                  IconButton(
-                    icon: Icon(Icons.tune),
-                    onPressed: () {},
-                    color: Color(0xFFFFCA55),
-                    iconSize: 25,
-                  ),
-                  SizedBox(
-                    width: 60,
-                    height: 30,
-                    child: RaisedButton(
-                      child: Text('검색', style: TextStyle(color: Colors.white)),
-                      onPressed: () {},
-                      color: Color(0xFFFFCA55),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ),
-        ),
-        SizedBox(
-//          child: _subjectList(context, dummySubjects),
+        _searchPart(),
+        Expanded(
+          child: _subjectList(context, dummySubjects),
         ),
       ],
+    );
+  }
+
+  Widget _searchPart() {
+    return Container(
+      color: Color(0xFF225B95),
+      child: SizedBox(
+          height: 40,
+          child: Container(
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.favorite),
+                  color: Color(0xFFFFCA55),
+                  onPressed: () {},
+                ),
+                SizedBox(
+                  width: 200,
+                  height: 30,
+                  child: CupertinoTextField(
+                    controller: searchController,
+                    placeholder: "과목명 혹은 교수님명",
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Color(0xFFFFCA55)),
+                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 5),
+                IconButton(
+                  icon: Icon(Icons.tune),
+                  onPressed: () {
+
+                  },
+                  color: Color(0xFFFFCA55),
+                  iconSize: 25,
+                ),
+                SizedBox(
+                  width: 60,
+                  height: 30,
+                  child: RaisedButton(
+                    child: Text('검색', style: TextStyle(color: Colors.white)),
+                    onPressed: () {},
+                    color: Color(0xFFFFCA55),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+              ],
+            ),
+          )
+      ),
+    );
+  }
+
+  Widget _subjectList(BuildContext context, List<Map> snapshot) {
+    return ListView(
+      children: snapshot.map((data) => _subjectListItem(context, data)).toList(),
     );
   }
 
   Widget _subjectListItem(BuildContext context, Map data) {
     final record = Record.fromMap(data) ;
     return Container(
-      decoration: BoxDecoration(border: Border.all()),
-      child: ListTile(
-        title: Text(record.name),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  '[${record.code}] ${record.name}',
+                  style: TextStyle(color: Color(0xFFFF6D00), fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text(record.type),
+                          Text(record.time),
+                          Text('${record.credit}학점')
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child:  Column(
+                        children: <Widget>[
+                          Text(record.prof),
+                          Text('영어 ${record.english}%')
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.star_border),
+                onPressed: () {},
+                color: Color(0xFFFFCA55),
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {},
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
@@ -246,11 +304,6 @@ class TableHeader extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
     return false;
-  }
-  Widget _subjectList(BuildContext context, List<Map> snapshot) {
-    return ListView(
-      children: snapshot.map((data) => _subjectListItem(context, data)).toList(),
-    );
   }
 }
 
