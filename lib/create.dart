@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login.dart';
 import 'table.dart';
+import 'filter.dart';
 
 final dummySubjects = [
   {"code": "ECE20010-01",
@@ -198,7 +198,7 @@ class CreatePageState extends State<CreatePage> {
                 IconButton(
                   icon: Icon(Icons.tune),
                   onPressed: () {
-
+                    filterDialog(context);
                   },
                   color: Color(0xFFFFCA55),
                   iconSize: 25,
