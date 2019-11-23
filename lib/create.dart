@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login.dart';
 import 'table.dart';
+import 'filter.dart';
 
 final dummySubjects = [
   {"code": "ECE20010-01",
@@ -18,12 +18,12 @@ final dummySubjects = [
     "credit": 3,
   },
   {"code": "ECE20010-02",
-    "name": "김유진바보",
+    "name": "김유진 바보",
     "prof": "메롱",
-    "english": 21,
+    "english": 0,
     "type": "멍청이",
     "time": "오롤롤",
-    "credit": 4,
+    "credit": 3,
   },
 ];
 
@@ -260,7 +260,6 @@ class CreatePageState extends State<CreatePage> {
         ),
       ],
     );
-
     return _top;
   }
 
@@ -291,10 +290,18 @@ class CreatePageState extends State<CreatePage> {
     return Column(
       children: <Widget>[
         _panelheader(),
-        Container(
-          color: Color(0xFF225B95),
+        _searchPart(),
+        _subjectList(context, dummySubjects),
+      ],
+    );
+  }
+
+  Widget _searchPart() {
+    return Container(
+      color: Color(0xFF225B95),
+      margin: EdgeInsets.fromLTRB(0, 2, 0, 2),
+      child: SizedBox(
           child: Container(
-            margin: EdgeInsets.fromLTRB(0, 2, 5, 2),
             child: Row(
               children: <Widget>[
                 IconButton(
@@ -308,49 +315,99 @@ class CreatePageState extends State<CreatePage> {
                     placeholder: "과목명 혹은 교수님명",
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: Color(0xFFFFCA55),),
+                      border: Border.all(color: Color(0xFFFFCA55)),
                       borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     ),
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.tune),
-                  onPressed: () {},
+                  onPressed: () {
+                    filterDialog(context);
+                  },
                   color: Color(0xFFFFCA55),
                   iconSize: 25,
                 ),
-                SizedBox(
-                  width: 70,
-                  child: RaisedButton(
-                    color: Color(0xFFFFCA55),
-                    child: Text('검색', style: TextStyle(color: Colors.white)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    onPressed: () {},
+                Container(
+                  padding: EdgeInsets.only(right: 5,),
+                  child: SizedBox(
+                    width: 60,
+                    child: RaisedButton(
+                      child: Text('검색', style: TextStyle(color: Colors.white)),
+                      onPressed: () {},
+                      color: Color(0xFFFFCA55),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        Expanded(
-          child: _subjectList(context, dummySubjects),
-        ),
-      ],
+          )
+      ),
     );
   }
 
   Widget _subjectList(BuildContext context, List<Map> snapshot) {
-    return ListView(
+    return Expanded(
+      child: ListView(
       children: snapshot.map((data) => _subjectListItem(context, data)).toList(),
+      )
     );
   }
 
   Widget _subjectListItem(BuildContext context, Map data) {
     final record = Record.fromMap(data) ;
     return Container(
-      decoration: BoxDecoration(border: Border.all()),
-      child: ListTile(
-        title: Text(record.name),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  '[${record.code}] ${record.name}',
+                  style: TextStyle(color: Color(0xFFFF6D00), fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text(record.type),
+                          Text(record.time),
+                          Text('${record.credit}학점')
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child:  Column(
+                        children: <Widget>[
+                          Text(record.prof),
+                          Text('영어 ${record.english}%')
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.star_border),
+                onPressed: () {},
+                color: Color(0xFFFFCA55),
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {},
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
