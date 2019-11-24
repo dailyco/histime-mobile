@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
           child: RaisedButton(
             color: const Color(0xFFFFCA55),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
-            child: Text('Logout'),
+            child: Text('Logout', style: TextStyle(color: Colors.white),),
             onPressed: () {
               signOut();
               Navigator.pop(context);
