@@ -36,11 +36,12 @@ class CreatePageState extends State<CreatePage> {
   double _panelHeightOpen = 330.0;
   double _panelHeightClosed = 30.0;
   double _oneTimeHeight = 50.0;
-  double _width;
+  double _oneTimeWidth;
 
   @override
   Widget build(BuildContext context) {
-    _width = MediaQuery.of(context).size.width;
+    double _width = MediaQuery.of(context).size.width;
+    _oneTimeWidth = (_width - 20) / 13 * 2;
 
     return Scaffold(
       body: SafeArea(
@@ -105,7 +106,6 @@ class CreatePageState extends State<CreatePage> {
 
   Widget _tableTime() {
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       decoration: BoxDecoration(
         border: Border(right: BorderSide(color: Color(0xFF225B95)),),
       ),
@@ -129,7 +129,7 @@ class CreatePageState extends State<CreatePage> {
 
   Widget _time(String time) {
     return SizedBox(
-      width: (_width - 20) / 13,
+      width: _oneTimeWidth / 2,
       height: _oneTimeHeight,
       child: Center(
         child: Text(time, style: TextStyle(fontSize: 15,),),
@@ -299,50 +299,48 @@ class CreatePageState extends State<CreatePage> {
   Widget _searchPart() {
     return Container(
       color: Color(0xFF225B95),
-      margin: EdgeInsets.fromLTRB(0, 2, 0, 2),
-      child: SizedBox(
-          child: Container(
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.favorite),
-                  color: Color(0xFFFFCA55),
-                  onPressed: () {},
-                ),
-                Expanded(
-                  child: CupertinoTextField(
-                    controller: searchController,
-                    placeholder: "과목명 혹은 교수님명",
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Color(0xFFFFCA55)),
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.tune),
-                  onPressed: () {
-                    filterDialog(context);
-                  },
-                  color: Color(0xFFFFCA55),
-                  iconSize: 25,
-                ),
-                Container(
-                  padding: EdgeInsets.only(right: 5,),
-                  child: SizedBox(
-                    width: 60,
-                    child: RaisedButton(
-                      child: Text('검색', style: TextStyle(color: Colors.white)),
-                      onPressed: () {},
-                      color: Color(0xFFFFCA55),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                  ),
-                ),
-              ],
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0, 2, 0, 2),
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.favorite),
+              color: Color(0xFFFFCA55),
+              onPressed: () {},
             ),
-          )
+            Expanded(
+              child: CupertinoTextField(
+                controller: searchController,
+                placeholder: "과목명 혹은 교수님명",
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Color(0xFFFFCA55)),
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.tune),
+              onPressed: () {
+                filterDialog(context);
+              },
+              color: Color(0xFFFFCA55),
+              iconSize: 25,
+            ),
+            Container(
+              padding: EdgeInsets.only(right: 5,),
+              child: SizedBox(
+                width: 60,
+                child: RaisedButton(
+                  child: Text('검색', style: TextStyle(color: Colors.white)),
+                  onPressed: () {},
+                  color: Color(0xFFFFCA55),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
