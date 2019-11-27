@@ -35,14 +35,9 @@ class CreatePage extends StatefulWidget {
 class CreatePageState extends State<CreatePage> {
   double _panelHeightOpen = 330.0;
   double _panelHeightClosed = 30.0;
-  double _oneTimeHeight = 50.0;
-  double _oneTimeWidth;
 
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
-    _oneTimeWidth = (_width - 20) / 13 * 2;
-
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -60,7 +55,7 @@ class CreatePageState extends State<CreatePage> {
                 child: Column(
                   children: <Widget>[
                     _topbody(),
-                    _table(),
+                    table(),
                     _buttonbody(),
                     _emptybox(),
                   ],
@@ -69,79 +64,6 @@ class CreatePageState extends State<CreatePage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _table() {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Color(0xFF225B95)),
-          ),
-          child: Column(
-            children: <Widget>[
-              _tableTitle(),
-              _tableDay(),
-              Expanded(child: tableBody(),),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _tableDay() {
-    return Container(
-      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF225B95)),),
-      ),
-      child: Row(
-        children: <Widget>[
-          _day(""),
-          _day("월"),
-          _day("화"),
-          _day("수"),
-          _day("목"),
-          _day("금"),
-          _day("토"),
-        ],
-      ),
-    );
-  }
-
-  Widget _day(String day) {
-    return Expanded(
-      flex: day == ""? 1 : 2,
-      child: Text(day, textAlign: TextAlign.center, style: TextStyle(fontSize: 15),),
-    );
-  }
-
-  Widget _tableTitle() {
-    return Container(
-      color: Color(0xFF225B95),
-      child: Row(
-        children: <Widget>[
-          SizedBox(width: 10,),
-          Expanded(
-            child: Text("예비 시간표1", style: TextStyle(color: Colors.white, fontSize: 17),),
-          ),
-          IconButton(
-            icon: Icon(Icons.view_list),
-            color: Color(0xFFFFCA55),
-            iconSize: 25,
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.refresh),
-            color: Color(0xFFFFCA55),
-            iconSize: 25,
-            onPressed: () {},
-          ),
-        ],
       ),
     );
   }
@@ -210,6 +132,7 @@ class CreatePageState extends State<CreatePage> {
             child: Text('Logout', style: TextStyle(color: Colors.white),),
             onPressed: () {
               signOut();
+              Navigator.pop(context);
               Navigator.pop(context);
             },
           ),

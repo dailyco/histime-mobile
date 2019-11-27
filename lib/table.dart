@@ -3,7 +3,74 @@ import 'package:flutter/material.dart';
 import 'package:random_color/random_color.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-Widget tableBody() {
+Widget table() {
+  return Expanded(
+    child: Container(
+      padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Color(0xFF225B95)),
+        ),
+        child: Column(
+          children: <Widget>[
+            _tableTitle(),
+            _tableDay(),
+            Expanded(child: _tableBody(),),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _tableTitle() {
+  return Container(
+    color: Color(0xFF225B95),
+    child: Row(
+      children: <Widget>[
+        SizedBox(width: 10,),
+        Expanded(
+          child: Text("예비 시간표1", style: TextStyle(color: Colors.white, fontSize: 17),),
+        ),
+        IconButton(
+          icon: Icon(Icons.view_list),
+          color: Color(0xFFFFCA55),
+          iconSize: 25,
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.refresh),
+          color: Color(0xFFFFCA55),
+          iconSize: 25,
+          onPressed: () {},
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _tableDay() {
+  List<String> _dayLst = ["", "월", "화", "수", "목", "금", "토"];
+
+  return Container(
+    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+    decoration: BoxDecoration(
+      border: Border(bottom: BorderSide(color: Color(0xFF225B95)),),
+    ),
+    child: Row(
+      children: _dayLst.map((d) => _day(d)).toList(),
+    ),
+  );
+}
+
+Widget _day(String day) {
+  return Expanded(
+    flex: day == ""? 1 : 2,
+    child: Text(day, textAlign: TextAlign.center, style: TextStyle(fontSize: 15),),
+  );
+}
+
+Widget _tableBody() {
   return StaggeredGridView.countBuilder(
     shrinkWrap: true,
     crossAxisCount: 13,

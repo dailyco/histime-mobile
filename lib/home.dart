@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFFFFCA55),
         onPressed: () => is_home? _dialog() : _dialog(),
       ),
-//      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
