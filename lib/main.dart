@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mad_histime/home.dart';
+import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
 import 'login.dart';
 
-void main() => runApp(MyApp());
+void main(){
+  debugPaintSizeEnabled = false;
+  runApp(MyApp());
+
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

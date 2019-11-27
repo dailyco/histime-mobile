@@ -85,55 +85,11 @@ class CreatePageState extends State<CreatePage> {
             children: <Widget>[
               _tableTitle(),
               _tableDay(),
-              _tableBody(),
+              Expanded(child: tableBody(),),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _tableBody() {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          _tableTime(),
-//        tablebody(),
-        ],
-      ),
-    );
-  }
-
-  Widget _tableTime() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(right: BorderSide(color: Color(0xFF225B95)),),
-      ),
-      child: Column(
-        children: <Widget>[
-          _time("1"),
-          _time("2"),
-          _time("3"),
-          _time("4"),
-          _time("5"),
-          _time("6"),
-          _time("7"),
-          _time("8"),
-          _time("9"),
-          _time("10"),
-          _time("11"),
-        ],
-      ),
-    );
-  }
-
-  Widget _time(String time) {
-    return SizedBox(
-      width: _oneTimeWidth / 2,
-      height: _oneTimeHeight,
-      child: Center(
-        child: Text(time, style: TextStyle(fontSize: 15,),),
-      )
     );
   }
 
@@ -260,7 +216,12 @@ class CreatePageState extends State<CreatePage> {
         ),
       ],
     );
-    return _top;
+    return Column(
+      children: <Widget>[
+        _top,
+        SizedBox(height: 10,),
+      ],
+    );
   }
 
   Widget _buttonbody() {

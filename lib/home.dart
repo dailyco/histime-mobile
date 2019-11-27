@@ -140,7 +140,6 @@ class _HomePageState extends State<HomePage> {
       final _homebody = Container(
         padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
         child: ListView(
-          scrollDirection: Axis.vertical,
           shrinkWrap: true,
           addAutomaticKeepAlives: false,
           children: _names.map((name) {

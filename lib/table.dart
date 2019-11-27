@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
 
-Widget tablebody() {
-  return Expanded(
-    child: Row(
-//      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: List.generate(6, (d) => _buildColumn(d)).toList(),
-    ),
-  );
+import 'package:random_color/random_color.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-//  return Expanded(
-//    child: ListView(
-//      scrollDirection: Axis.vertical,
-//      shrinkWrap: true,
-//      children: <Widget>[
-//
-//      ],
-//    ),
-//  );
-}
-
-Widget _buildColumn(int d) {
-  return Positioned(
-//    left: 0.0,
-//    top: d * 25.0,
-//    right: 0.0,
-//    height: 50.0 * (d + 1),
-//    child: Container(
-//      margin: EdgeInsets.symmetric(horizontal: 2.0),
-//      color: Colors.orange[100 + d * 100],
-//    ),
+Widget tableBody() {
+  return StaggeredGridView.countBuilder(
+    shrinkWrap: true,
+    crossAxisCount: 13,
+    itemCount: 77,
+    itemBuilder: (BuildContext context, int index) {
+      return (index % 7) == 0
+          ? Container(
+              decoration: BoxDecoration(
+                border: Border(right: BorderSide(color: Color(0xFF225B95)), /*bottom: BorderSide(color: Color(0xFF225B95)),*/),
+              ),
+              child: Center(child: Text(((index / 7) + 1).toInt().toString(), style: TextStyle(fontSize: 15,),),
+              ),
+            )
+          : Container(
+              color: RandomColor().randomColor(colorHue: ColorHue.orange),
+              child: Center(child: Text('Item $index'),),
+            );
+    },
+    staggeredTileBuilder: (int index) =>
+        StaggeredTile.count((index % 7) == 0? 1 : 2, 3),
   );
 }
