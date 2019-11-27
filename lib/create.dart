@@ -5,27 +5,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login.dart';
-import 'table.dart';
-import 'filter.dart';
-
-final dummySubjects = [
-  {"code": "ECE20010-01",
-    "name": "데이터 구조",
-    "prof": "김영섭",
-    "english": 20,
-    "type": "전선",
-    "time": "월1, 월2, 목1, 목2",
-    "credit": 3,
-  },
-  {"code": "ECE20010-02",
-    "name": "김유진 바보",
-    "prof": "메롱",
-    "english": 0,
-    "type": "멍청이",
-    "time": "오롤롤",
-    "credit": 3,
-  },
-];
+import 'data.dart';
 
 class CreatePage extends StatefulWidget {
   @override
@@ -291,6 +271,154 @@ class CreatePageState extends State<CreatePage> {
           )
         ],
       ),
+    );
+  }
+
+  List<DropdownMenuItem<String>> _facultyMenuItems;
+  String _currentFaculty;
+
+  @override
+  void initState() {
+    _facultyMenuItems = getFacultyItems();
+    _currentFaculty = _facultyMenuItems[0].value;
+  }
+
+  List<DropdownMenuItem<String>> getFacultyItems() {
+    List<DropdownMenuItem<String>> facultyItems = List();
+    for (String _faculty in faculty) {
+      facultyItems.add(new DropdownMenuItem(
+          value: _faculty,
+          child: Text(_faculty)
+      ));
+    }
+    return facultyItems;
+  }
+
+  void changedFaculty(String selectedFaculty) {
+    setState(() {
+      _currentFaculty = selectedFaculty;
+    });
+  }
+
+  Future<void> filterDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          backgroundColor: Colors.white,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFF225B95), width: 3),
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            ),
+            height: 450,
+            padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('학 부',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
+                    ),
+                    DropdownButton<String>(
+                      value: _currentFaculty,
+                      items: _facultyMenuItems,
+                      onChanged: changedFaculty,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('이수구분', textAlign: TextAlign.center,
+                        style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DropdownButton(
+                      value: _currentFaculty,
+                      items: _facultyMenuItems,
+                      onChanged: changedFaculty,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('교양영역',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
+                    ),
+                    DropdownButton(
+                      value: _currentFaculty,
+                      items: _facultyMenuItems,
+                      onChanged: changedFaculty,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('학 점',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
+                    ),
+                    DropdownButton(
+                      value: _currentFaculty,
+                      items: _facultyMenuItems,
+                      onChanged: changedFaculty,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('영어비율',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
+                    ),
+                    DropdownButton(
+                      value: _currentFaculty,
+                      items: _facultyMenuItems,
+                      onChanged: changedFaculty,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text('시간대',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
+                    ),
+                    Expanded(
+                      child: RaisedButton(
+                        child: Text('시간대 선택', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        color: Color(0xFF225B95),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: RaisedButton(
+                    padding: EdgeInsets.fromLTRB(40, 5, 40, 5),
+                    child: Text('검색하기', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    color: Color(0xFFFFCA55),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                    onPressed: () {},
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
