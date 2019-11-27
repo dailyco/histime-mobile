@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'login.dart';
 import 'data.dart';
+import 'table.dart';
 
 class CreatePage extends StatefulWidget {
   @override
@@ -228,8 +229,7 @@ class CreatePageState extends State<CreatePage> {
           Expanded(
             child: Column(
               children: <Widget>[
-                Text(
-                  '[${record.code}] ${record.name}',
+                Text('[${record.code}] ${record.name}',
                   style: TextStyle(color: Color(0xFFFF6D00), fontWeight: FontWeight.bold),
                 ),
                 Row(
