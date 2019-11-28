@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mad_histime/create.dart';
-
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'create.dart';
 import 'login.dart';
+import 'timetableDB.dart';
 
+List<TimeTable> tts = [];
 class HomePage extends StatefulWidget {
 
   @override
@@ -59,8 +61,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _mybody() {
-    final _names = <String>["예비 시간표", "예비1", "예비2", "예비3", "예비4", "예비5", "예비6"];
-
     final _logo = Column(
       children: <Widget>[
         Image.asset(
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    _makeListTile(String name) {
+    _makeListTile(TimeTable tt) {
       return Container(
         margin:  EdgeInsets.symmetric(vertical: 8.0),
         decoration: BoxDecoration(color: Color(0xFF9CBADF)),
@@ -115,13 +115,13 @@ class _HomePageState extends State<HomePage> {
             child: Icon(Icons.menu, color: Colors.white),
           ),
           title: Text(
-            name,
+            tt.name,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           subtitle: Row(
             children: <Widget>[
               Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
-              Text("credit : 18", style: TextStyle(color: Colors.white))
+              Text("credit : " + tt.credit.toString(), style: TextStyle(color: Colors.white))
             ],
           ),
           trailing: Container(
@@ -131,45 +131,59 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
 
                 }),
-            ),
-          ),
-        );
-      }
-
-      final _homebody = Container(
-        padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
-        child: ListView(
-          shrinkWrap: true,
-          addAutomaticKeepAlives: false,
-          children: _names.map((name) {
-            return _makeListTile(name);
-          }).toList(),
-        ),
-      );
-
-      final _emptybox = SizedBox(
-        height: 85,
-      );
-
-      final _docbody = Container(
-      );
-
-      return SafeArea(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _top,
-              Expanded(
-                child: is_home? _homebody : _docbody,
-              ),
-              _emptybox,
-            ],
           ),
         ),
       );
     }
+
+    final _homebody = Container(
+      padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+      child: StreamBuilder(
+        stream: CRUDModel().fetchProductsAsStream(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            tts = snapshot.data.documents
+                .map((doc) => TimeTable.fromMap(doc.data, doc.documentID))
+                .toList();
+            return tts.isEmpty
+                ? Center(
+                    child: Text("생성된 시간표가 없습니다.\n\n아래의 '+' 버튼을 통해 시간표를 생성해주세요.", textAlign: TextAlign.center, ),
+                  )
+                : ListView.builder(
+                    itemCount: tts.length,
+                    itemBuilder: (buildContext, index) =>
+                        _makeListTile(tts[index]),
+                  );
+          } else {
+            return Text('fetching');
+          }
+        }
+      ),
+    );
+
+    final _emptybox = SizedBox(
+      height: 85,
+    );
+
+    final _docbody = Container(
+    );
+
+    return SafeArea(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            _top,
+            Expanded(
+              child: is_home? _homebody : _docbody,
+            ),
+            _emptybox,
+          ],
+        ),
+      ),
+    );
+  }
 
   TextEditingController tableNameController ;
 
@@ -189,9 +203,9 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 SizedBox(height: 8,),
                 CupertinoTextField(
-                  controller: tableNameController,
-                  placeholder: "시간표의 이름을 입력하세요",
-                  decoration: BoxDecoration(color: Colors.white30)
+                    controller: tableNameController,
+                    placeholder: "시간표의 이름을 입력하세요",
+                    decoration: BoxDecoration(color: Colors.white30)
                 ),
               ],
             ),

@@ -10,6 +10,8 @@ import 'package:mad_histime/home.dart';
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
+FirebaseUser user;
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -20,13 +22,11 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   bool _success = false;
-  FirebaseUser _user;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _mybody(),
-
     );
   }
 
@@ -129,36 +129,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<String> _signInAnonymously() async {
-    final FirebaseUser user = (await _auth.signInAnonymously()).user;
-    assert(user != null);
-    assert(user.isAnonymous);
-    assert(!user.isEmailVerified);
-    assert(await user.getIdToken() != null);
+    final FirebaseUser _user = (await _auth.signInAnonymously()).user;
+    assert(_user != null);
+    assert(_user.isAnonymous);
+    assert(!_user.isEmailVerified);
+    assert(await _user.getIdToken() != null);
     if (Platform.isIOS) {
       // Anonymous auth doesn't show up as a provider on iOS
-      assert(user.providerData.isEmpty);
+      assert(_user.providerData.isEmpty);
     } else if (Platform.isAndroid) {
       // Anonymous auth does show up as a provider on Android
-      assert(user.providerData.length == 1);
-      assert(user.providerData[0].providerId == 'firebase');
-      assert(user.providerData[0].uid != null);
-      assert(user.providerData[0].displayName == null);
-      assert(user.providerData[0].photoUrl == null);
-      assert(user.providerData[0].email == null);
+      assert(_user.providerData.length == 1);
+      assert(_user.providerData[0].providerId == 'firebase');
+      assert(_user.providerData[0].uid != null);
+      assert(_user.providerData[0].displayName == null);
+      assert(_user.providerData[0].photoUrl == null);
+      assert(_user.providerData[0].email == null);
     }
 
     final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
+    assert(_user.uid == currentUser.uid);
     setState(() {
-      if (user != null) {
+      if (_user != null) {
         _success = true;
-        _user = user;
+        user = _user;
       } else {
         _success = false;
       }
     });
 
-    return 'signInAnonymously succeeded: $user';
+    return 'signInAnonymously succeeded: $_user';
   }
 
   Future<String> _signInWithGoogle() async {
@@ -170,26 +170,26 @@ class _LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
 
-    final FirebaseUser user =
+    final FirebaseUser _user =
         (await _auth.signInWithCredential(credential)).user;
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    assert(_user.email != null);
+    assert(_user.displayName != null);
+    assert(!_user.isAnonymous);
+    assert(await _user.getIdToken() != null);
 
     final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
+    assert(_user.uid == currentUser.uid);
 
     setState(() {
-      if (user != null) {
+      if (_user != null) {
         _success = true;
-        _user = user;
+        user = _user;
       } else {
         _success = false;
       }
     });
 
-    return 'signInWithGoogle succeeded: $user';
+    return 'signInWithGoogle succeeded: $_user';
   }
 }
 
