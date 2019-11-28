@@ -7,7 +7,8 @@ final dummySubjects = [
     "type": "전선",
     "time": "월1, 월2, 목1, 목2",
     "credit": 3,
-    "faculty": "전산전자"
+    "faculty": "전산전자",
+    "favorite": false,
   },
   {"code": "ECE20010-02",
     "name": "데이터 베이스",
@@ -16,7 +17,8 @@ final dummySubjects = [
     "type": "전필",
     "time": "화2, 금2",
     "credit": 3,
-    "faculty": "전산전자"
+    "faculty": "전산전자",
+    "favorite": false,
   },
 ];
 
