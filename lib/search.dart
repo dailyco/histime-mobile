@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'data.dart';
-import 'create.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'record.dart';
 
 TextEditingController searchController ;
 double _panelHeightClosed = 30.0;
@@ -25,7 +25,13 @@ class SearchPanelState extends State<SearchPanel> {
       children: <Widget>[
         _panelheader(),
         _searchPart(context),
-        _subjectList(context, dummySubjects),
+        StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('subjects').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return LinearProgressIndicator();
+            return _subjectList(context, snapshot.data.documents);
+          },
+        ),
       ],
     );
   }
@@ -103,7 +109,7 @@ class SearchPanelState extends State<SearchPanel> {
     );
   }
 
-  Widget _subjectList(BuildContext context, List<Map> snapshot) {
+  Widget _subjectList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return Expanded(
         child: ListView(
           children:
@@ -114,8 +120,8 @@ class SearchPanelState extends State<SearchPanel> {
     );
   }
 
-  Widget _subjectListItem(Map data) {
-    final record = Record.fromMap(data) ;
+  Widget _subjectListItem(DocumentSnapshot data) {
+    final record = Record.fromSnapshot(data) ;
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),

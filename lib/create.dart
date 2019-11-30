@@ -153,34 +153,3 @@ class TableHeader extends SliverPersistentHeaderDelegate {
     return false;
   }
 }
-
-class Record {
-  final String code, name, prof, type, time ;
-  final int english, credit;
-  final DocumentReference reference;
-  final bool favorite;
-
-  Record.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['code'] != null),
-        assert(map['name'] != null),
-        assert(map['prof'] != null),
-        assert(map['english'] != null),
-        assert(map['type'] != null),
-        assert(map['time'] != null),
-        assert(map['credit'] != null),
-        assert(map['favorite'] != null),
-        code = map['code'],
-        name = map['name'],
-        prof = map['prof'],
-        english = map['english'],
-        type = map['type'],
-        time = map['time'],
-        credit = map['credit'],
-        favorite = map['favorite'];
-
-  Record.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
-
-  @override
-  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
-}
