@@ -13,6 +13,7 @@ class SearchPanel extends StatefulWidget {
 
 class SearchPanelState extends State<SearchPanel> {
   bool is_favorite = false;
+  final db = Firestore.instance.collection('subjects');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,15 +24,21 @@ class SearchPanelState extends State<SearchPanel> {
   Widget searchpanel(BuildContext context) {
     return Column(
       children: <Widget>[
-        _panelheader(),
-        _searchPart(context),
-        StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('subjects').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return LinearProgressIndicator();
-            return _subjectList(context, snapshot.data.documents);
-          },
-        ),
+        _panelheader(), //위에 손잡이 부분
+        is_favorite ? _favoritePart(context) : _searchPart(context), //검색창 있는 부분
+        is_favorite ?
+            StreamBuilder<QuerySnapshot>(
+              stream: db.where('like', isEqualTo: true).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return LinearProgressIndicator();
+                return _subjectList(context, snapshot.data.documents);
+              }) :
+            StreamBuilder<QuerySnapshot>(
+              stream: db.snapshots(),
+              builder: (context, snapshot) {
+              if (!snapshot.hasData) return LinearProgressIndicator();
+              return _subjectList(context, snapshot.data.documents);
+            }),
       ],
     );
   }
@@ -109,12 +116,47 @@ class SearchPanelState extends State<SearchPanel> {
     );
   }
 
+  Widget _favoritePart(BuildContext context) {
+    return Container(
+      color: Color(0xFF225B95),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0, 2, 0, 2),
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.storage),
+              color: Color(0xFFFFCA55),
+              onPressed: () {
+                setState(() {
+                  is_favorite = false ;
+                });
+              },
+            ),
+            Expanded(
+              child: Container(),
+            ),
+            Container(
+              padding: EdgeInsets.only(right: 5,),
+              child: SizedBox(
+                width: 100,
+                child: RaisedButton(
+                  child: Text('모두 추가', style: TextStyle(color: Colors.white)),
+                  onPressed: () {},
+                  color: Color(0xFFFFCA55),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _subjectList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return Expanded(
         child: ListView(
           children:
-          is_favorite? //favorite true인것만 query
-          snapshot.map((data) => _subjectListItem(data)).toList():
           snapshot.map((data) => _subjectListItem(data)).toList(),
         )
     );
@@ -160,15 +202,25 @@ class SearchPanelState extends State<SearchPanel> {
           ),
           Column(
             children: <Widget>[
-              IconButton(
+              record.like ? IconButton(
+                icon: Icon(Icons.star),
+                color: Color(0xFFFFCA55),
+                onPressed: () async {
+                  record.reference.updateData({'like' : false});
+                },
+              )
+              : IconButton(
                 icon: Icon(Icons.star_border),
                 color: Color(0xFFFFCA55),
-                onPressed: () {
+                onPressed: () async {
+                  record.reference.updateData({'like' : true});
                 },
               ),
               IconButton(
                 icon: Icon(Icons.add),
-                onPressed: () {},
+                onPressed: () {
+                  //TODO
+                },
               ),
             ],
           )
