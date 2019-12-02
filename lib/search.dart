@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'record.dart';
 
-TextEditingController searchController ;
 double _panelHeightClosed = 30.0;
 
 class SearchPanel extends StatefulWidget {
@@ -13,6 +12,18 @@ class SearchPanel extends StatefulWidget {
 
 class SearchPanelState extends State<SearchPanel> {
   bool is_favorite = false;
+  String _searchFaculty = '';
+  String _searchName = '';
+
+  TextEditingController searchController ;
+  @override
+  initState() {
+    _facultyMenuItems = getFacultyItems();
+    _currentFaculty = _facultyMenuItems[0].value;
+    searchController = new TextEditingController();
+    super.initState();
+  }
+
   final db = Firestore.instance.collection('subjects');
   @override
   Widget build(BuildContext context) {
@@ -22,20 +33,24 @@ class SearchPanelState extends State<SearchPanel> {
   }
 
   Widget searchpanel(BuildContext context) {
+
+    Stream<QuerySnapshot> streamSelect () {
+      if (is_favorite)
+        return db.where('like', isEqualTo: true).snapshots();
+      else if (_currentFaculty != '전체')
+        return db.where('faculty', isEqualTo: _searchFaculty).snapshots();
+      else if (searchController.text.isNotEmpty)
+        return db.where('name', isEqualTo: _searchName).snapshots();
+      else
+        return db.snapshots();
+    }
     return Column(
       children: <Widget>[
         _panelheader(), //위에 손잡이 부분
         is_favorite ? _favoritePart(context) : _searchPart(context), //검색창 있는 부분
-        is_favorite ?
-            StreamBuilder<QuerySnapshot>(
-              stream: db.where('like', isEqualTo: true).snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LinearProgressIndicator();
-                return _subjectList(context, snapshot.data.documents);
-              }) :
-            StreamBuilder<QuerySnapshot>(
-              stream: db.snapshots(),
-              builder: (context, snapshot) {
+        StreamBuilder<QuerySnapshot>(
+            stream: streamSelect(),
+            builder: (context, snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
               return _subjectList(context, snapshot.data.documents);
             }),
@@ -104,7 +119,9 @@ class SearchPanelState extends State<SearchPanel> {
                 width: 60,
                 child: RaisedButton(
                   child: Text('검색', style: TextStyle(color: Colors.white)),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (searchController.text.isNotEmpty) _searchName = searchController.text;
+                  },
                   color: Color(0xFFFFCA55),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -231,11 +248,6 @@ class SearchPanelState extends State<SearchPanel> {
 
   List<DropdownMenuItem<String>> _facultyMenuItems;
   String _currentFaculty;
-
-  void initState() {
-    _facultyMenuItems = getFacultyItems();
-    _currentFaculty = _facultyMenuItems[0].value;
-  }
 
   List<DropdownMenuItem<String>> getFacultyItems() {
     List<DropdownMenuItem<String>> facultyItems = List();
@@ -365,7 +377,10 @@ class SearchPanelState extends State<SearchPanel> {
                     child: Text('검색하기', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     color: Color(0xFFFFCA55),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                    onPressed: () {},
+                    onPressed: () {
+                      _searchFaculty = _currentFaculty;
+                      Navigator.pop(context) ;
+                    },
                   ),
                 )
               ],
