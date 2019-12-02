@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,8 +41,8 @@ class SearchPanelState extends State<SearchPanel> {
         return db.where('like', isEqualTo: true).snapshots();
       else if (_currentFaculty != '전체')
         return db.where('faculty', isEqualTo: _searchFaculty).snapshots();
-      else if (searchController.text.isNotEmpty)
-        return db.where('name', isEqualTo: _searchName).snapshots();
+//      else if (searchController.text.isNotEmpty)
+//        return db.where('name', isEqualTo: _searchName).snapshots();
       else
         return db.snapshots();
     }
@@ -247,7 +249,13 @@ class SearchPanelState extends State<SearchPanel> {
   }
 
   List<DropdownMenuItem<String>> _facultyMenuItems;
+  List<DropdownMenuItem<String>> _fieldMenuItems;
+  List<DropdownMenuItem<String>> _typeMenuItems;
+  List<DropdownMenuItem<int>> _englishMenuItems;
   String _currentFaculty;
+  String _currentField;
+  String _currentType;
+  int _currentEng;
 
   List<DropdownMenuItem<String>> getFacultyItems() {
     List<DropdownMenuItem<String>> facultyItems = List();
