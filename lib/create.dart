@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mad_histime/timetableDB.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,13 +10,20 @@ import 'data.dart';
 import 'table.dart';
 
 class CreatePage extends StatefulWidget {
+  TimeTable tt;
+
+  CreatePage({Key key, @required this.tt,}) : super(key: key);
+
   @override
-  CreatePageState createState() => CreatePageState() ;
+  _CreatePageState createState() => _CreatePageState(tt: tt) ;
 }
 
-class CreatePageState extends State<CreatePage> {
+class _CreatePageState extends State<CreatePage> {
+  TimeTable tt;
   double _panelHeightOpen = 330.0;
   double _panelHeightClosed = 30.0;
+
+  _CreatePageState({Key key, @required this.tt, });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +44,7 @@ class CreatePageState extends State<CreatePage> {
                 child: Column(
                   children: <Widget>[
                     _topbody(),
-                    table(),
+                    table(tt),
                     _buttonbody(),
                     _emptybox(),
                   ],
@@ -98,7 +106,7 @@ class CreatePageState extends State<CreatePage> {
           child: SizedBox(),
         ),
         Text(
-          "님, 반가워요!",
+          "${user.displayName} 님, 반가워요!",
           style: TextStyle(fontSize: 12),
         ),
         SizedBox(

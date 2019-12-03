@@ -3,13 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class TimeTable {
-  final int order;
-  final String id;
-  final String uid;
-  final String name;
-  final double credit;
-  final Map<dynamic, dynamic> subjects;
-//  final DocumentReference reference;
+  bool isNew = false;
+  int order;
+  String id;
+  String uid;
+  String name;
+  double credit;
+  Map<dynamic, dynamic> subjects;
+
+  TimeTable(String name, bool isNew) {
+    this.name = name;
+    this.isNew = isNew;
+  }
 
   TimeTable.fromMap(Map<String, dynamic> map, String id)
       : assert(map['order'] != null),
@@ -17,7 +22,7 @@ class TimeTable {
         assert(map['name'] != null),
         assert(map['credit'] != null),
         assert(map['subjects'] != null),
-        id = id,
+        id = id ?? '',
         order = map['order'],
         uid = map['uid'],
         name = map['name'],
@@ -33,6 +38,8 @@ class TimeTable {
       "subjects": subjects,
     };
   }
+
+//  setName(String n) => name = n;
 
 //  TimeTable.fromSnapshot(DocumentSnapshot snapshot)
 //      : this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -51,7 +58,7 @@ class CRUD{
   }
 
   Future<QuerySnapshot> getDataCollection() {
-    return ref.getDocuments() ;
+    return ref.orderBy("order", descending: false).getDocuments();
   }
   Stream<QuerySnapshot> streamDataCollection() {
     return ref.orderBy("order", descending: false).snapshots() ;
@@ -98,6 +105,7 @@ class CRUDModel extends ChangeNotifier {
     await crud.removeDocument(id) ;
     return ;
   }
+
   Future updateProduct(TimeTable data,String id) async{
     await crud.updateDocument(data.toJson(), id) ;
     return ;

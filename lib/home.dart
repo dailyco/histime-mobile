@@ -8,7 +8,8 @@ import 'create.dart';
 import 'login.dart';
 import 'timetableDB.dart';
 
-List<TimeTable> tts = [];
+final TT = CRUDModel();
+
 class HomePage extends StatefulWidget {
 
   @override
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> {
           child: SizedBox(),
         ),
         Text(
-          "님, 반가워요!",
+          "${user.displayName} 님, 반가워요!",
           style: TextStyle(fontSize: 12),
         ),
         SizedBox(
@@ -105,57 +106,193 @@ class _HomePageState extends State<HomePage> {
       ],
     );
 
-    _makeListTile(TimeTable tt) {
+    Widget slideRightBackground() {
       return Container(
-        margin:  EdgeInsets.symmetric(vertical: 8.0),
-        decoration: BoxDecoration(color: Color(0xFF9CBADF)),
-        child: ListTile(
-          leading: Container(
-            padding: EdgeInsets.only(right: 12.0),
-            child: Icon(Icons.menu, color: Colors.white),
-          ),
-          title: Text(
-            tt.name,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Row(
+        color: Colors.green,
+        child: Align(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
-              Text("credit : " + tt.credit.toString(), style: TextStyle(color: Colors.white))
+              SizedBox(
+                width: 20,
+              ),
+              Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+              Text(
+                " Edit",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.left,
+              ),
             ],
           ),
-          trailing: Container(
-            padding: EdgeInsets.only(right: 10.0),
-            child: IconButton(
-                icon: Icon(Icons.edit, color: Colors.white, size: 25,),
-                onPressed: () {
+          alignment: Alignment.centerLeft,
+        ),
+      );
+    }
 
-                }),
+    Widget slideLeftBackground() {
+      return Container(
+        color: Colors.red,
+        child: Align(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              Text(
+                " Delete",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.right,
+              ),
+              SizedBox(
+                width: 20,
+              ),
+            ],
+          ),
+          alignment: Alignment.centerRight,
+        ),
+      );
+    }
+
+    _updateLst(int idx) {
+      for (int i = idx; i < TT.tts.length; i++) {
+        TT.tts[i].order -= 1;
+        TT.updateProduct(TT.tts[i], TT.tts[i].id);
+      }
+    }
+
+    _makeListTile(int idx) {
+      return Dismissible(
+        key: Key(TT.tts[idx].name),
+        background: slideRightBackground(),
+        secondaryBackground: slideLeftBackground(),
+        confirmDismiss: (direction) async {
+          if (direction == DismissDirection.endToStart) {
+            bool isCheck;
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CupertinoAlertDialog(
+                  content: Text("\n'${TT.tts[idx].name}'\n시간표를 삭제하시겠습니까?",
+                    textAlign: TextAlign.center,),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("취소",),
+                      onPressed: () {
+                        isCheck = false;
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Color(0xFF225B95),
+                          fontWeight: FontWeight.bold,),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          TT.removeProduct(TT.tts[idx].id);
+                          _updateLst(idx);
+                        });
+                        isCheck = true;
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+              });
+            return isCheck;
+          } else {
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CupertinoAlertDialog(
+                  content: Text("\n'${TT.tts[idx].name}'\n시간표를 수정하시겠습니까?",
+                    textAlign: TextAlign.center,),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("취소",),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Color(0xFF225B95),
+                          fontWeight: FontWeight.bold,),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (contsext) => CreatePage(tt: TT.tts[idx])));
+                      },
+                    ),
+                  ],
+                );
+              });
+            return false;
+          }
+        },
+        child: Container(
+          margin:  EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(color: Color(0xFF9CBADF)),
+          child: ListTile(
+            leading: Container(
+              padding: EdgeInsets.only(right: 12.0),
+              child: Icon(Icons.menu, color: Colors.white),
+            ),
+            title: Text(
+              TT.tts[idx].name,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Row(
+              children: <Widget>[
+                Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
+                Text("credit : " + TT.tts[idx].credit.toString(), style: TextStyle(color: Colors.white))
+              ],
+            ),
+            trailing: Container(
+              padding: EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                  icon: Icon(Icons.edit, color: Colors.white, size: 25,),
+                  onPressed: () {
+
+                  }),
+            ),
           ),
         ),
       );
     }
 
+
+
     final _homebody = Container(
       padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
       child: StreamBuilder(
-        stream: CRUDModel().fetchProductsAsStream(),
+        stream: TT.fetchProductsAsStream(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
-            tts = snapshot.data.documents
-                .map((doc) => TimeTable.fromMap(doc.data, doc.documentID))
-                .toList();
-            return tts.isEmpty
-                ? Center(
-                    child: Text("생성된 시간표가 없습니다.\n\n아래의 '+' 버튼을 통해 시간표를 생성해주세요.", textAlign: TextAlign.center, ),
-                  )
-                : ListView.builder(
-                    itemCount: tts.length,
-                    itemBuilder: (buildContext, index) =>
-                        _makeListTile(tts[index]),
-                  );
+            TT.fetchProducts(); //<!-- TODO Async 문제 해결 -->
+            return ListView.builder(
+              itemCount: TT.tts.length,
+              itemBuilder: (buildContext, index) =>
+                  _makeListTile(index),
+            );
           } else {
-            return Text('fetching');
+            return Center(
+              child: Text("생성된 시간표가 없습니다.\n\n아래의 '+' 버튼을 통해 시간표를 생성해주세요.", textAlign: TextAlign.center, ),
+            );
           }
         }
       ),
@@ -185,10 +322,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  TextEditingController tableNameController ;
+  TextEditingController _tableNameController = new TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  _isSame(String name) {
+    for(int i = 0; i < TT.tts.length; i++) {
+      if (TT.tts[i].name == name) return true;
+    }
+    return false;
+  }
 
   _dialog() {
-    showDialog(
+    bool isWrong = false;
+
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return CupertinoAlertDialog (
@@ -196,24 +343,32 @@ class _HomePageState extends State<HomePage> {
             '새로운 시간표 만들기',
             style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold),
           ),
-          content: Card(
-            color: Colors.transparent,
-            elevation: 0.0,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 8,),
-                CupertinoTextField(
-                    controller: tableNameController,
-                    placeholder: "시간표의 이름을 입력하세요",
-                    decoration: BoxDecoration(color: Colors.white30)
+          content: Column(
+            children: <Widget>[
+              SizedBox(height: 8,),
+              Form(
+                key: _formKey,
+                child: CupertinoTextField(
+                  controller: _tableNameController,
+                  placeholder: "시간표의 이름을 입력하세요",
+//                  decoration: BoxDecoration(color: Colors.white30),
+                //<--! TODO add validator!! -->
+//                  validator: (value) {
+//                    if (isWrong) {
+//                      return '시간표의 이름을 다시 확인해주세요';
+//                    }
+//                    return null;
+//                  },
                 ),
-              ],
-            ),
+
+              ),
+            ],
           ),
           actions: <Widget>[
             FlatButton(
               child: Text('취소'),
               onPressed: () {
+                isWrong = false;
                 Navigator.pop(context);
               },
             ),
@@ -223,8 +378,18 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)
               ),
               onPressed: () {
-                Navigator.pop(context) ;
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CreatePage())) ;
+                if (_tableNameController.text == null || _isSame(_tableNameController.text)) {
+                  setState(() {
+                    isWrong = true;
+                  });
+                } else {
+                  isWrong = false;
+                  TimeTable newTT = TimeTable(_tableNameController.text, true);
+                  _tableNameController.clear();
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (contsext) => CreatePage(tt: newTT,)));
+                }
               },
             ),
           ],

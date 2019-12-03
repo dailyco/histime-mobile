@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mad_histime/timetableDB.dart';
 
 import 'package:random_color/random_color.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-Widget table() {
+Widget table(TimeTable tt) {
   return Expanded(
     child: Container(
       padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -13,7 +14,7 @@ Widget table() {
         ),
         child: Column(
           children: <Widget>[
-            _tableTitle(),
+            _tableTitle(tt),
             _tableDay(),
             Expanded(child: _tableBody(),),
           ],
@@ -23,14 +24,14 @@ Widget table() {
   );
 }
 
-Widget _tableTitle() {
+Widget _tableTitle(TimeTable tt) {
   return Container(
     color: Color(0xFF225B95),
     child: Row(
       children: <Widget>[
         SizedBox(width: 10,),
         Expanded(
-          child: Text("예비 시간표1", style: TextStyle(color: Colors.white, fontSize: 17),),
+          child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),),
         ),
         IconButton(
           icon: Icon(Icons.view_list),
