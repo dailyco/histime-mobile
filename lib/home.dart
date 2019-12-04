@@ -164,16 +164,19 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    _updateLst(int idx) {
-      for (int i = idx; i < TT.tts.length; i++) {
-        TT.tts[i].order -= 1;
+    _updateLst() {
+      for (int i = 0; i < TT.tts.length; i++) {
+        TT.tts[i].order = i;
         TT.updateProduct(TT.tts[i], TT.tts[i].id);
       }
     }
 
-    _makeListTile(int idx) {
+    _makeListTile(DocumentSnapshot data) {
+      final tt = TimeTable.fromSnapshot(data);
+      TT.tts.add(tt);
+
       return Dismissible(
-        key: Key(TT.tts[idx].name),
+        key: Key(tt.name),
         background: slideRightBackground(),
         secondaryBackground: slideLeftBackground(),
         confirmDismiss: (direction) async {
@@ -183,7 +186,7 @@ class _HomePageState extends State<HomePage> {
               context: context,
               builder: (BuildContext context) {
                 return CupertinoAlertDialog(
-                  content: Text("\n'${TT.tts[idx].name}'\n시간표를 삭제하시겠습니까?",
+                  content: Text("\n'${tt.name}'\n시간표를 삭제하시겠습니까?",
                     textAlign: TextAlign.center,),
                   actions: <Widget>[
                     FlatButton(
@@ -200,10 +203,10 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.bold,),
                       ),
                       onPressed: () {
-                        setState(() {
-                          TT.removeProduct(TT.tts[idx].id);
-                          _updateLst(idx);
-                        });
+                        TT.removeProduct(tt.id);
+                        TT.tts.remove(tt);
+                        _updateLst();
+                        print(TT.tts[0]);
                         isCheck = true;
                         Navigator.pop(context);
                       },
@@ -211,13 +214,14 @@ class _HomePageState extends State<HomePage> {
                   ],
                 );
               });
+            print("check:" + isCheck.toString());
             return isCheck;
           } else {
             await showDialog(
               context: context,
               builder: (BuildContext context) {
                 return CupertinoAlertDialog(
-                  content: Text("\n'${TT.tts[idx].name}'\n시간표를 수정하시겠습니까?",
+                  content: Text("\n'${tt.name}'\n시간표를 수정하시겠습니까?",
                     textAlign: TextAlign.center,),
                   actions: <Widget>[
                     FlatButton(
@@ -235,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(
-                            builder: (contsext) => CreatePage(tt: TT.tts[idx])));
+                            builder: (context) => CreatePage(tt: tt)));
                       },
                     ),
                   ],
@@ -253,13 +257,13 @@ class _HomePageState extends State<HomePage> {
               child: Icon(Icons.menu, color: Colors.white),
             ),
             title: Text(
-              TT.tts[idx].name,
+              tt.name,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             subtitle: Row(
               children: <Widget>[
                 Icon(Icons.flash_on, color: Color(0xFFFFCA55), size: 17),
-                Text("credit : " + TT.tts[idx].credit.toString(), style: TextStyle(color: Colors.white))
+                Text("credit : " + tt.credit.toString(), style: TextStyle(color: Colors.white))
               ],
             ),
             trailing: Container(
@@ -275,25 +279,35 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    _makeList(BuildContext context, List<DocumentSnapshot> snapshots) {
+      if (snapshots == null || snapshots.isEmpty) {
+        return const [];
+      }
 
+      return ListView(
+        children: snapshots.map((data) => _makeListTile(data)).toList(),
+      );
+    }
 
     final _homebody = Container(
       padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
-      child: StreamBuilder(
-        stream: TT.fetchProductsAsStream(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData) {
-            TT.fetchProducts(); //<!-- TODO Async 문제 해결 -->
-            return ListView.builder(
-              itemCount: TT.tts.length,
-              itemBuilder: (buildContext, index) =>
-                  _makeListTile(index),
-            );
-          } else {
+      child: StreamBuilder<QuerySnapshot>(
+        stream: TT.fetchProductsAsStream(user.uid),
+        builder: (context, snapshot) {
+          TT.tts.clear();
+          if (!snapshot.hasData)
             return Center(
               child: Text("생성된 시간표가 없습니다.\n\n아래의 '+' 버튼을 통해 시간표를 생성해주세요.", textAlign: TextAlign.center, ),
             );
-          }
+          else return _makeList(context, snapshot.data.documents);
+//          TT.fetchProducts(user.uid);
+//          if (TT.tts != null && TT.tts.length != 0) {
+//            return ListView.builder(
+//              itemCount: TT.tts.length,
+//              itemBuilder: (buildContext, index) =>
+//                  _makeListTile(index),
+//            );
+//          }
         }
       ),
     );
@@ -352,7 +366,7 @@ class _HomePageState extends State<HomePage> {
                   controller: _tableNameController,
                   placeholder: "시간표의 이름을 입력하세요",
 //                  decoration: BoxDecoration(color: Colors.white30),
-                //<--! TODO add validator!! -->
+                // TODO add validator!!
 //                  validator: (value) {
 //                    if (isWrong) {
 //                      return '시간표의 이름을 다시 확인해주세요';
@@ -384,11 +398,11 @@ class _HomePageState extends State<HomePage> {
                   });
                 } else {
                   isWrong = false;
-                  TimeTable newTT = TimeTable(_tableNameController.text, true);
+                  TimeTable newTT = TimeTable(_tableNameController.text, TT.tts.length);
                   _tableNameController.clear();
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (contsext) => CreatePage(tt: newTT,)));
+                      builder: (context) => CreatePage(tt: newTT,)));
                 }
               },
             ),

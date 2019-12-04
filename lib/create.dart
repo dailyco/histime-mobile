@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mad_histime/timetableDB.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login.dart';
 import 'table.dart';
 import 'search.dart';
+import 'home.dart';
+import 'timetableDB.dart';
 
 class CreatePage extends StatefulWidget {
   TimeTable tt;
@@ -124,7 +125,13 @@ class _CreatePageState extends State<CreatePage> {
           child: Text('저 장', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           color: Color(0xFF225B95),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
-          onPressed: () {},
+          onPressed: () {
+            if (tt.isNew)
+              TT.addProduct(tt);
+            else
+              TT.updateProduct(tt, tt.id);
+            Navigator.pop(context);
+          },
         ),
         OutlineButton(
           child: Text('돌아가기', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF225B95))),

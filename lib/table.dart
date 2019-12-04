@@ -16,7 +16,7 @@ Widget table(TimeTable tt) {
           children: <Widget>[
             _tableTitle(tt),
             _tableDay(),
-            Expanded(child: _tableBody(),),
+            Expanded(child: _tableBody(tt),),
           ],
         ),
       ),
@@ -71,7 +71,7 @@ Widget _day(String day) {
   );
 }
 
-Widget _tableBody() {
+Widget _tableBody(TimeTable tt) {
   return StaggeredGridView.countBuilder(
     shrinkWrap: true,
     crossAxisCount: 13,
@@ -85,6 +85,8 @@ Widget _tableBody() {
               child: Center(child: Text(((index / 7) + 1).toInt().toString(), style: TextStyle(fontSize: 15,),),
               ),
             )
+          : tt.subject[index] == null
+          ? null
           : Container(
               color: RandomColor().randomColor(colorHue: ColorHue.orange),
               child: Center(child: Text('Item $index'),),
