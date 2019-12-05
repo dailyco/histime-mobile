@@ -20,8 +20,8 @@ class TimeTable {
     this.credit = 0;
     this.order = order;
     this.uid = user.uid;
-    subject = new List(77);
-    subjects = new Map<dynamic, dynamic>();
+    this.subject = new List(77);
+    this.subjects = new Map<dynamic, dynamic>();
   }
 
   TimeTable.fromMap(Map<String, dynamic> map, String id)
@@ -68,9 +68,8 @@ class CRUD{
     ref = _db.collection(path);
   }
 
-  Future<QuerySnapshot> getDataCollection(String uid) {
-    return ref.where('uid', isEqualTo: uid).getDocuments();
-    
+  Future<QuerySnapshot> getDataCollection() {
+    return ref.getDocuments();
   }
   Stream<QuerySnapshot> streamDataCollection(String uid) {
     return ref.where('uid', isEqualTo: uid).orderBy("order", descending: false).snapshots();
@@ -90,13 +89,13 @@ class CRUD{
 
 }
 
-class CRUDModel extends ChangeNotifier {
+class TTModel extends ChangeNotifier {
   CRUD crud = CRUD('table');
 
   List<TimeTable> tts = [];
 
-  Future<List<TimeTable>> fetchProducts(String uid) async {
-    var result = await crud.getDataCollection(uid);
+  Future<List<TimeTable>> fetchProducts() async {
+    var result = await crud.getDataCollection();
     tts = result.documents
         .map((doc) => TimeTable.fromMap(doc.data, doc.documentID))
         .toList();
@@ -129,4 +128,77 @@ class CRUDModel extends ChangeNotifier {
     return ;
 
   }
+}
+
+class Subject {
+  final String code, name, prof, type, time, field, location, faculty;
+  final int english, credit;
+  final bool like, grade, dualPF;
+  final DocumentReference reference;
+
+  Subject.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['code'] != null),
+        assert(map['name'] != null),
+        assert(map['prof'] != null),
+        assert(map['english'] != null),
+        assert(map['type'] != null),
+        assert(map['time'] != null),
+        assert(map['credit'] != null),
+        assert(map['like'] != null),
+        assert(map['grade'] != null),
+        assert(map['dualPF'] != null),
+        assert(map['field'] != null),
+        assert(map['location'] != null),
+        assert(map['faculty'] != null),
+        code = map['code'],
+        name = map['name'],
+        prof = map['prof'],
+        english = map['english'],
+        type = map['type'],
+        time = map['time'],
+        credit = map['credit'],
+        like = map['like'],
+        grade = map['grade'],
+        dualPF = map['dualPF'],
+        field = map['field'],
+        location = map['location'],
+        faculty = map['faculty'];
+
+
+  Subject.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
+}
+
+class SubjectsModel extends ChangeNotifier {
+  CRUD crud = CRUD('subjects');
+
+//  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
+//    return crud.streamDataCollection(uid);
+//  }
+//
+//  Future<TimeTable> getProductById(String id) async {
+//    var doc = await crud.getDocumentById(id);
+//    return  TimeTable.fromMap(doc.data, doc.documentID) ;
+//  }
+//
+//
+//  Future removeProduct(String id) async{
+//    await crud.removeDocument(id);
+//    return ;
+//  }
+//
+//  Future updateProduct(TimeTable data,String id) async{
+//    await crud.updateDocument(data.toJson(), id) ;
+//    return ;
+//  }
+//
+//  Future addProduct(TimeTable data) async{
+//    var result  = await crud.addDocument(data.toJson()) ;
+//
+//    return ;
+//
+//  }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mad_histime/timetableDB.dart';
 
 import 'package:random_color/random_color.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import 'timetableDB.dart';
 
 Widget table(TimeTable tt) {
   return Expanded(
@@ -87,12 +88,16 @@ Widget _tableBody(TimeTable tt) {
             )
           : tt.subject[index] == null
           ? null
-          : Container(
-              color: RandomColor().randomColor(colorHue: ColorHue.orange),
-              child: Center(child: Text('Item $index'),),
-            );
+          : _makeTimeSubject(tt.subject[index]);
     },
     staggeredTileBuilder: (int index) =>
         StaggeredTile.count((index % 7) == 0? 1 : 2, 3),
+  );
+}
+
+Widget _makeTimeSubject(String id) {
+  return Container(
+    color: RandomColor().randomColor(colorHue: ColorHue.orange),
+    child: Center(child: Text(id),),
   );
 }

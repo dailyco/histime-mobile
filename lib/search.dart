@@ -3,19 +3,31 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mad_histime/create.dart';
+
 import 'record.dart';
+import 'timetableDB.dart';
+//import 'create.dart';
 
 double _panelHeightClosed = 30.0;
 
 class SearchPanel extends StatefulWidget {
+  TimeTable tt;
+  Function callback;
+
+  SearchPanel({Key key, @required this.tt, @required this.callback}) : super(key: key);
+
   @override
-  SearchPanelState createState() => SearchPanelState() ;
+  _SearchPanelState createState() => _SearchPanelState(tt: tt) ;
 }
 
-class SearchPanelState extends State<SearchPanel> {
+class _SearchPanelState extends State<SearchPanel> {
+  TimeTable tt;
   bool is_favorite = false;
   String _searchFaculty = '';
   String _searchName = '';
+
+  _SearchPanelState({Key key, @required this.tt, });
 
   TextEditingController searchController ;
   @override
@@ -238,7 +250,41 @@ class SearchPanelState extends State<SearchPanel> {
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  //TODO
+                  int day = 0;
+                  int period = 0;
+                  List<int> subjectsIdx = [];
+
+                  List<String> times = record.time.split(',');
+                  times.forEach((e) {
+                    period = int.parse(e.substring(1));
+                    switch (e[0]) {
+                      case '월':
+                        day = 6;
+                        break;
+                      case '화':
+                        day = 5;
+                        break;
+                      case '수':
+                        day = 4;
+                        break;
+                      case '목':
+                        day = 3;
+                        break;
+                      case '금':
+                        day = 2;
+                        break;
+                      case '토':
+                        day = 1;
+                        break;
+                    }
+                    subjectsIdx.add(7 * period - day);
+                  });
+
+                  if (canAdd(subjectsIdx))
+                    addSubjects(subjectsIdx, record);
+                  else ; // TODO "이미 과목이 찼다고 알려주기"
+
+                  this.widget.callback(new CreatePage(tt: tt));
                 },
               ),
             ],
@@ -246,6 +292,23 @@ class SearchPanelState extends State<SearchPanel> {
         ],
       ),
     );
+  }
+
+  bool canAdd(List<int> subjectsIdx) {
+    bool isOk = true;
+
+    subjectsIdx.forEach((idx) {
+      if (tt.subject[idx] != null)
+        isOk = false;
+    });
+
+    return isOk;
+  }
+
+  addSubjects(List<int> subjectsIdx, Record subject) {
+    super.setState(() {
+      subjectsIdx.forEach((idx) => tt.subject[idx] = subject.code);
+    });
   }
 
   List<DropdownMenuItem<String>> _facultyMenuItems;

@@ -8,7 +8,7 @@ import 'create.dart';
 import 'login.dart';
 import 'timetableDB.dart';
 
-final TT = CRUDModel();
+final TT = TTModel();
 
 class HomePage extends StatefulWidget {
 

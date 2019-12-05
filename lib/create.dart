@@ -20,11 +20,28 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
+  SearchPanel searchPanel;
+  Widget currentPage;
+
   TimeTable tt;
   double _panelHeightOpen = 330.0;
   double _panelHeightClosed = 30.0;
 
   _CreatePageState({Key key, @required this.tt, });
+
+  @override
+  void initState() {
+    super.initState();
+    searchPanel = SearchPanel(tt: tt, callback: this.callback);
+
+    currentPage = searchPanel;
+  }
+
+  void callback(Widget nextPage) {
+    setState(() {
+      this.currentPage = nextPage;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +55,7 @@ class _CreatePageState extends State<CreatePage> {
               minHeight: _panelHeightClosed,
 //              parallaxEnabled: true,
 //              parallaxOffset: 1,
-              panel: SearchPanel(),
+              panel: searchPanel,
 //              collapsed: _panelheader(),
               body: Container(
                 padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
