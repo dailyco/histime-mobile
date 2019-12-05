@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class TimeTable {
   bool isNew = false;
   int order;
@@ -9,11 +11,17 @@ class TimeTable {
   String uid;
   String name;
   double credit;
+  List<dynamic> subject;
   Map<dynamic, dynamic> subjects;
 
-  TimeTable(String name, bool isNew) {
+  TimeTable(String name, int order) {
     this.name = name;
-    this.isNew = isNew;
+    this.isNew = true;
+    this.credit = 0;
+    this.order = order;
+    this.uid = user.uid;
+    subject = new List(77);
+    subjects = new Map<dynamic, dynamic>();
   }
 
   TimeTable.fromMap(Map<String, dynamic> map, String id)
@@ -21,12 +29,14 @@ class TimeTable {
         assert(map['uid'] != null),
         assert(map['name'] != null),
         assert(map['credit'] != null),
+        assert(map['subject'] != null),
         assert(map['subjects'] != null),
         id = id ?? '',
         order = map['order'],
         uid = map['uid'],
         name = map['name'],
         credit = map['credit'].toDouble(),
+        subject = map['subject'],
         subjects = map['subjects'];
 
   toJson() {
@@ -35,14 +45,15 @@ class TimeTable {
       "uid": uid,
       "name": name,
       "credit": credit,
+      "subject": subject,
       "subjects": subjects,
     };
   }
 
 //  setName(String n) => name = n;
 
-//  TimeTable.fromSnapshot(DocumentSnapshot snapshot)
-//      : this.fromMap(snapshot.data, reference: snapshot.reference);
+  TimeTable.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, snapshot.documentID);
 
 //  @override
 //  String toString() => "Record<$name:$votes>";
@@ -57,11 +68,12 @@ class CRUD{
     ref = _db.collection(path);
   }
 
-  Future<QuerySnapshot> getDataCollection() {
-    return ref.orderBy("order", descending: false).getDocuments();
+  Future<QuerySnapshot> getDataCollection(String uid) {
+    return ref.where('uid', isEqualTo: uid).getDocuments();
+    
   }
-  Stream<QuerySnapshot> streamDataCollection() {
-    return ref.orderBy("order", descending: false).snapshots() ;
+  Stream<QuerySnapshot> streamDataCollection(String uid) {
+    return ref.where('uid', isEqualTo: uid).orderBy("order", descending: false).snapshots();
   }
   Future<DocumentSnapshot> getDocumentById(String id) {
     return ref.document(id).get();
@@ -81,18 +93,18 @@ class CRUD{
 class CRUDModel extends ChangeNotifier {
   CRUD crud = CRUD('table');
 
-  List<TimeTable> tts;
+  List<TimeTable> tts = [];
 
-  Future<List<TimeTable>> fetchProducts() async {
-    var result = await crud.getDataCollection();
+  Future<List<TimeTable>> fetchProducts(String uid) async {
+    var result = await crud.getDataCollection(uid);
     tts = result.documents
         .map((doc) => TimeTable.fromMap(doc.data, doc.documentID))
         .toList();
     return tts;
   }
 
-  Stream<QuerySnapshot> fetchProductsAsStream() {
-    return crud.streamDataCollection();
+  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
+    return crud.streamDataCollection(uid);
   }
 
   Future<TimeTable> getProductById(String id) async {
@@ -102,7 +114,7 @@ class CRUDModel extends ChangeNotifier {
 
 
   Future removeProduct(String id) async{
-    await crud.removeDocument(id) ;
+    await crud.removeDocument(id);
     return ;
   }
 
