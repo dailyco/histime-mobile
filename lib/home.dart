@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
       TT.tts.add(tt);
 
       return Dismissible(
-        key: Key(tt.name),
+        key: UniqueKey(),
         background: slideRightBackground(),
         secondaryBackground: slideLeftBackground(),
         confirmDismiss: (direction) async {
@@ -206,7 +206,6 @@ class _HomePageState extends State<HomePage> {
                         TT.removeProduct(tt.id);
                         TT.tts.remove(tt);
                         _updateLst();
-                        print(TT.tts[0]);
                         isCheck = true;
                         Navigator.pop(context);
                       },

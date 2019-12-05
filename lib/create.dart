@@ -62,7 +62,7 @@ class _CreatePageState extends State<CreatePage> {
                 child: Column(
                   children: <Widget>[
                     _topbody(),
-                    table(tt),
+                    table(context, tt, this.callback),
                     _buttonbody(),
                     _emptybox(),
                   ],
