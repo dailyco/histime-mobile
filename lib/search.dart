@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 import 'record.dart';
 
 double _panelHeightClosed = 30.0;
@@ -15,6 +16,9 @@ class SearchPanel extends StatefulWidget {
 class SearchPanelState extends State<SearchPanel> {
   bool is_favorite = false;
   String _searchFaculty = '';
+  String _searchField = '';
+  String _searchType = '';
+  String _searchEng = '';
   String _searchName = '';
 
   TextEditingController searchController ;
@@ -22,6 +26,16 @@ class SearchPanelState extends State<SearchPanel> {
   initState() {
     _facultyMenuItems = getFacultyItems();
     _currentFaculty = _facultyMenuItems[0].value;
+
+    _fieldMenuItems = getFieldItems();
+    _currentField = _fieldMenuItems[0].value;
+
+    _typeMenuItems = getTypeItems();
+    _currentType = _typeMenuItems[0].value;
+
+    _englishMenuItems = getEngItems();
+    _currentEng = _englishMenuItems[0].value;
+
     searchController = new TextEditingController();
     super.initState();
   }
@@ -41,6 +55,12 @@ class SearchPanelState extends State<SearchPanel> {
         return db.where('like', isEqualTo: true).snapshots();
       else if (_currentFaculty != '전체')
         return db.where('faculty', isEqualTo: _searchFaculty).snapshots();
+      else if (_currentField != '전체')
+        return db.where('field', isEqualTo: _searchField).snapshots();
+      else if (_currentType != '전체')
+        return db.where('type', isEqualTo: _searchType).snapshots();
+      else if (_currentEng != '전체')
+        return db.where('english', isEqualTo: _searchEng).snapshots();
 //      else if (searchController.text.isNotEmpty)
 //        return db.where('name', isEqualTo: _searchName).snapshots();
       else
@@ -248,14 +268,15 @@ class SearchPanelState extends State<SearchPanel> {
     );
   }
 
+  //dropdown menus
   List<DropdownMenuItem<String>> _facultyMenuItems;
   List<DropdownMenuItem<String>> _fieldMenuItems;
   List<DropdownMenuItem<String>> _typeMenuItems;
-  List<DropdownMenuItem<int>> _englishMenuItems;
+  List<DropdownMenuItem<String>> _englishMenuItems;
   String _currentFaculty;
   String _currentField;
   String _currentType;
-  int _currentEng;
+  String _currentEng;
 
   List<DropdownMenuItem<String>> getFacultyItems() {
     List<DropdownMenuItem<String>> facultyItems = List();
@@ -269,17 +290,64 @@ class SearchPanelState extends State<SearchPanel> {
   }
 
   void changedFaculty(String selectedFaculty)  {
-    setState(() {
-      _currentFaculty = selectedFaculty;
-    });
+    setState(() { _currentFaculty = selectedFaculty; });
   }
+
+  List<DropdownMenuItem<String>> getFieldItems() {
+    List<DropdownMenuItem<String>> fieldItems = List();
+    for (String _field in field) {
+      fieldItems.add(new DropdownMenuItem(
+          value: _field,
+          child: Text(_field)
+      ));
+    }
+    return fieldItems;
+  }
+  void changedField(String selectedField)  {
+    setState(() { _currentField = selectedField; });
+  }
+
+  List<DropdownMenuItem<String>> getTypeItems() {
+    List<DropdownMenuItem<String>> typeItems = List();
+    for (String _type in type) {
+      typeItems.add(new DropdownMenuItem(
+          value: _type,
+          child: Text(_type)
+      ));
+    }
+    return typeItems;
+  }
+
+  void changedType(String selectedType)  {
+    setState(() { _currentType = selectedType; });
+  }
+
+  List<DropdownMenuItem<String>> getEngItems() {
+    List<DropdownMenuItem<String>> engItems = List();
+    for (String _eng in english) {
+      engItems.add(new DropdownMenuItem(
+          value: _eng,
+          child: Text(_eng)
+      ));
+    }
+    return engItems;
+  }
+
+  void changedEng(String selectedEng)  {
+    setState(() { _currentEng = selectedEng; });
+  }
+
+  bool val05 = false;
+  bool val1 = false;
+  bool val2 = false;
+  bool val3 = false;
 
   Future<void> filterDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return Dialog(
+        return Dialog (
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
           backgroundColor: Colors.white,
           child: Container(
@@ -312,11 +380,13 @@ class SearchPanelState extends State<SearchPanel> {
                         style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold),
                       ),
                     ),
-                    DropdownButton(
-                      value: _currentFaculty,
-                      items: _facultyMenuItems,
-                      onChanged: changedFaculty,
-                    ),
+                    Expanded(
+                      child: DropdownButton(
+                        value: _currentType,
+                        items: _typeMenuItems,
+                        onChanged: changedType,
+                      ),
+                    )
                   ],
                 ),
                 Row(
@@ -327,9 +397,9 @@ class SearchPanelState extends State<SearchPanel> {
                           style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
                     ),
                     DropdownButton(
-                      value: _currentFaculty,
-                      items: _facultyMenuItems,
-                      onChanged: changedFaculty,
+                      value: _currentField,
+                      items: _fieldMenuItems,
+                      onChanged: changedField,
                     ),
                   ],
                 ),
@@ -340,10 +410,62 @@ class SearchPanelState extends State<SearchPanel> {
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
                     ),
-                    DropdownButton(
-                      value: _currentFaculty,
-                      items: _facultyMenuItems,
-                      onChanged: changedFaculty,
+                    //TODO checkbox for 0.5, 1, 2, 3, more
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("0.5"),
+                        Checkbox(
+                          value: val05,
+                          onChanged: (bool value) {
+                            setState(() {
+                              val05 = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("1"),
+                        Checkbox(
+                          value: val1,
+                          onChanged: (bool value) {
+                            setState(() {
+                              val1 = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("2"),
+                        Checkbox(
+                          value: val2,
+                          onChanged: (bool value) {
+                            setState(() {
+                              val2 = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("3"),
+                        Checkbox(
+                          value: val3,
+                          onChanged: (bool value) {
+                            setState(() {
+                              val3 = value;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -354,11 +476,13 @@ class SearchPanelState extends State<SearchPanel> {
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
                     ),
-                    DropdownButton(
-                      value: _currentFaculty,
-                      items: _facultyMenuItems,
-                      onChanged: changedFaculty,
-                    ),
+                    Expanded(
+                      child: DropdownButton(
+                        value: _currentEng,
+                        items: _englishMenuItems,
+                        onChanged: changedEng,
+                      ),
+                    )
                   ],
                 ),
                 Row(
@@ -387,6 +511,9 @@ class SearchPanelState extends State<SearchPanel> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                     onPressed: () {
                       _searchFaculty = _currentFaculty;
+                      _searchField = _currentField;
+                      _searchType = _currentType;
+                      _searchEng = _currentEng;
                       Navigator.pop(context) ;
                     },
                   ),
