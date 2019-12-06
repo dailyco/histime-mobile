@@ -17,7 +17,7 @@ Widget table(BuildContext context, TimeTable tt, Function callback) {
         ),
         child: Column(
           children: <Widget>[
-            _tableTitle(tt),
+            _tableTitle(tt, callback),
             _tableDay(),
             Expanded(child: _tableBody(context, tt, callback),),
             _tableBottom(tt),
@@ -28,14 +28,26 @@ Widget table(BuildContext context, TimeTable tt, Function callback) {
   );
 }
 
-Widget _tableTitle(TimeTable tt) {
+Widget _tableTitle(TimeTable tt, Function callback) {
+  final _nameController = TextEditingController();
+  _nameController.text = tt.name;
+
   return Container(
     color: Color(0xFF225B95),
     child: Row(
       children: <Widget>[
         SizedBox(width: 10,),
         Expanded(
-          child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),),
+          child: TextField(
+            controller: _nameController,
+            // TODO onEditingComplete으로 할지..... onChanged로 할지......
+            onEditingComplete: () {
+              tt.name = _nameController.text;
+//              callback(new CreatePage(tt: tt));
+            },
+            style: TextStyle(color: Colors.white, fontSize: 17),
+          ),
+//          child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),),
         ),
         IconButton(
           icon: Icon(Icons.view_list),
@@ -47,7 +59,9 @@ Widget _tableTitle(TimeTable tt) {
           icon: Icon(Icons.refresh),
           color: Color(0xFFFFCA55),
           iconSize: 25,
-          onPressed: () {},
+          onPressed: () {
+            _clearTimetable(tt, callback);
+          },
         ),
       ],
     ),
@@ -121,6 +135,12 @@ Widget _tableBottom(TimeTable tt) {
       ],
     ),
   );
+}
+
+_clearTimetable(TimeTable tt, Function callback) {
+  for (int i = 0; i < tt.subject.length; i++)
+    tt.subject[i] = null;
+  callback(new CreatePage(tt: tt));
 }
 
 _checkDelete(BuildContext context, TimeTable tt, int idx, Function callback) {
