@@ -207,6 +207,7 @@ class _HomePageState extends State<HomePage> {
                         TT.removeProduct(tt.id);
                         TT.tts.remove(tt);
                         _updateLst();
+//                        print(TT.tts[0]);
                         isCheck = true;
                         Navigator.pop(context);
                       },
