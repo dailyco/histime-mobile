@@ -26,8 +26,11 @@ dependencies:
   # for random color (https://pub.dev/packages/random_color)
   random_color: ^1.0.3
 
-  # for tip dialog
+  # for tip dialog (https://pub.dev/packages/tip_dialog#-readme-tab-)
   tip_dialog: ^2.1.0
+
+  # for image picker
+  image_picker: ^0.6.1+10
 
 dev_dependencies:
   flutter_test:
