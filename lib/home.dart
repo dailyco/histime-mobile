@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+//import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'create.dart';
 import 'login.dart';
+import 'table.dart';
 import 'timetableDB.dart';
 
 final TT = TTModel();
@@ -266,7 +267,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             // TODO show time table
-//            onTap: _showTimeTable(),
+            onTap: () => showTable(context, tt),
 //            trailing: Container(
 //              padding: EdgeInsets.only(right: 10.0),
 //              child: IconButton(

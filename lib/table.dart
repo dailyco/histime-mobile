@@ -7,6 +7,69 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'timetableDB.dart';
 import 'create.dart';
 
+showTable(BuildContext context, TimeTable tt) {
+  double _height = MediaQuery.of(context).size.height;
+  _height *= 0.8;
+
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog (
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+        backgroundColor: Color(0xFF225B95),
+        child: Container(
+          height: _height,
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(width: 10,),
+                    Expanded( child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),), ),
+                  ],
+                ),
+              ),
+              _tableDay(),
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: StaggeredGridView.countBuilder(
+                    shrinkWrap: true,
+                    crossAxisCount: 13,
+                    itemCount: 77,
+                    itemBuilder: (BuildContext context, int index) {
+                      return (index % 7) == 0
+                          ? Container(
+                              decoration: BoxDecoration(
+                                border: Border(right: BorderSide(color: Color(0xFF225B95)), /*bottom: BorderSide(color: Color(0xFF225B95)),*/),
+                              ),
+                              child: Center(child: Text(((index / 7) + 1).toInt().toString(), style: TextStyle(fontSize: 15,),),
+                              ),
+                            )
+                          : tt.subject[index] == null
+                          ? null
+                          : Container(
+                              color: RandomColor().randomColor(colorHue: ColorHue.orange),
+                              child: Center(child: Text(tt.subject[index]),),
+                            );
+                    },
+                    staggeredTileBuilder: (int index) =>
+                        StaggeredTile.count((index % 7) == 0? 1 : 2, 3),
+                  ),
+                ),
+              ),
+              SizedBox(height: 5,),
+              _tableBottom(tt),
+            ],
+          ),
+        ),
+      );
+    }
+  );
+}
+
 Widget table(BuildContext context, TimeTable tt, Function callback) {
   return Expanded(
     child: Container(
@@ -46,6 +109,7 @@ Widget _tableTitle(TimeTable tt, Function callback) {
 //              callback(new CreatePage(tt: tt));
             },
             style: TextStyle(color: Colors.white, fontSize: 17),
+            enabled: false,
           ),
 //          child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),),
         ),
@@ -72,12 +136,15 @@ Widget _tableDay() {
   List<String> _dayLst = ["", "월", "화", "수", "목", "금", "토"];
 
   return Container(
-    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Color(0xFF225B95)),),
-    ),
-    child: Row(
-      children: _dayLst.map((d) => _day(d)).toList(),
+    color: Colors.white,
+    child: Container(
+      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFF225B95)),),
+      ),
+      child: Row(
+        children: _dayLst.map((d) => _day(d)).toList(),
+      ),
     ),
   );
 }
