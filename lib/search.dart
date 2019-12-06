@@ -10,9 +10,11 @@ import 'timetableDB.dart';
 import 'create.dart';
 
 double _panelHeightClosed = 30.0;
+final Sub = SubjectsModel();
 
 class SearchPanel extends StatefulWidget {
   TimeTable tt;
+  Subjects sub;
   Function callback;
 
   SearchPanel({Key key, @required this.tt, @required this.callback}) : super(key: key);
@@ -23,6 +25,7 @@ class SearchPanel extends StatefulWidget {
 
 class _SearchPanelState extends State<SearchPanel> {
   TimeTable tt;
+  Subjects sub;
   bool is_favorite = false;
   String _searchFaculty = '';
   String _searchField = '';
@@ -30,7 +33,7 @@ class _SearchPanelState extends State<SearchPanel> {
   String _searchEng = '';
   String _searchName = '';
 
-  _SearchPanelState({Key key, @required this.tt, });
+  _SearchPanelState({Key key, @required this.tt});
 
   TextEditingController searchController ;
   @override

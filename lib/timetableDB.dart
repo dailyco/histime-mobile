@@ -130,13 +130,12 @@ class TTModel extends ChangeNotifier {
   }
 }
 
-class Subject {
-  final String code, name, prof, type, time, field, location, faculty;
+class Subjects {
+  final String code, name, prof, type, time, field, location, faculty, id;
   final int english, credit;
   final bool like, grade, dualPF;
-  final DocumentReference reference;
 
-  Subject.fromMap(Map<String, dynamic> map, {this.reference})
+  Subjects.fromMap(Map<String, dynamic> map, String id)
       : assert(map['code'] != null),
         assert(map['name'] != null),
         assert(map['prof'] != null),
@@ -150,6 +149,7 @@ class Subject {
         assert(map['field'] != null),
         assert(map['location'] != null),
         assert(map['faculty'] != null),
+        id = id ?? '',
         code = map['code'],
         name = map['name'],
         prof = map['prof'],
@@ -164,41 +164,41 @@ class Subject {
         location = map['location'],
         faculty = map['faculty'];
 
+  Subjects.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, snapshot.documentID);
 
-  Subject.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
+  toJson() {
+    return {
+      "like": like,
+    };
+  }
 
-  @override
-  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
+//  @override
+//  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
 }
 
 class SubjectsModel extends ChangeNotifier {
   CRUD crud = CRUD('subjects');
 
-//  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
-//    return crud.streamDataCollection(uid);
-//  }
-//
-//  Future<TimeTable> getProductById(String id) async {
-//    var doc = await crud.getDocumentById(id);
-//    return  TimeTable.fromMap(doc.data, doc.documentID) ;
-//  }
-//
-//
-//  Future removeProduct(String id) async{
-//    await crud.removeDocument(id);
-//    return ;
-//  }
-//
-//  Future updateProduct(TimeTable data,String id) async{
-//    await crud.updateDocument(data.toJson(), id) ;
-//    return ;
-//  }
-//
-//  Future addProduct(TimeTable data) async{
-//    var result  = await crud.addDocument(data.toJson()) ;
-//
-//    return ;
-//
-//  }
+  List<Subjects> subjects = [];
+
+  Future<List<Subjects>>fetchSubjects() async {
+    var result = await crud.getDataCollection();
+    subjects = result.documents
+    .map((doc) => Subjects.fromMap(doc.data, doc.documentID))
+    .toList();
+
+    return subjects;
+  }
+
+  Future<Subjects> getProductById(String id) async {
+    var doc = await crud.getDocumentById(id);
+    return Subjects.fromMap(doc.data, doc.documentID) ;
+  }
+
+  Future updateProduct(Subjects data, String id) async{
+    await crud.updateDocument(data.toJson(), id) ;
+    return ;
+  }
+
 }
