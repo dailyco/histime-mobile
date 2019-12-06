@@ -26,6 +26,9 @@ dependencies:
   # for random color (https://pub.dev/packages/random_color)
   random_color: ^1.0.3
 
+  # for tip dialog
+  tip_dialog: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

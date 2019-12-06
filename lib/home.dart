@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+//import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'create.dart';
 import 'login.dart';
+import 'table.dart';
 import 'timetableDB.dart';
 
 final TT = TTModel();
@@ -176,7 +177,7 @@ class _HomePageState extends State<HomePage> {
       TT.tts.add(tt);
 
       return Dismissible(
-        key: Key(tt.name),
+        key: UniqueKey(),
         background: slideRightBackground(),
         secondaryBackground: slideLeftBackground(),
         confirmDismiss: (direction) async {
@@ -266,14 +267,16 @@ class _HomePageState extends State<HomePage> {
                 Text("credit : " + tt.credit.toString(), style: TextStyle(color: Colors.white))
               ],
             ),
-            trailing: Container(
-              padding: EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                  icon: Icon(Icons.edit, color: Colors.white, size: 25,),
-                  onPressed: () {
-
-                  }),
-            ),
+            // TODO show time table
+            onTap: () => showTable(context, tt),
+//            trailing: Container(
+//              padding: EdgeInsets.only(right: 10.0),
+//              child: IconButton(
+//                  icon: Icon(Icons.edit, color: Colors.white, size: 25,),
+//                  onPressed: () {
+//
+//                  }),
+//            ),
           ),
         ),
       );

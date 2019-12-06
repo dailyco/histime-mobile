@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tip_dialog/tip_dialog.dart';
+import 'package:tip_dialog/tip_dialog.dart' as prefix1;
 
 import 'login.dart';
 import 'table.dart';
@@ -62,7 +64,7 @@ class _CreatePageState extends State<CreatePage> {
                 child: Column(
                   children: <Widget>[
                     _topbody(),
-                    table(tt),
+                    table(context, tt, this.callback),
                     _buttonbody(),
                     _emptybox(),
                   ],
@@ -143,11 +145,39 @@ class _CreatePageState extends State<CreatePage> {
           color: Color(0xFF225B95),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(55)),
           onPressed: () {
-            if (tt.isNew)
-              TT.addProduct(tt);
-            else
-              TT.updateProduct(tt, tt.id);
-            Navigator.pop(context);
+            if (tt.name == '') _dialog(Icon(
+              Icons.cancel,
+              color: Colors.red,
+              size: 35,
+              textDirection: TextDirection.ltr,
+            ), "시간표의 이름을 다시 확인하세요");
+            else if (_isEmpty()) _dialog(Icon(
+              Icons.cancel,
+              color: Colors.red,
+              size: 35,
+              textDirection: TextDirection.ltr,
+            ), "시간표가 비었습니다");
+            else {
+//              _loadingDialog();
+              if (tt.isNew) {
+                TT.addProduct(tt);
+                _dialog(Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 35,
+                  textDirection: TextDirection.ltr,
+                ), "시간표가 생성되었습니다");
+              } else {
+                TT.updateProduct(tt, tt.id);
+                _dialog(Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 35,
+                  textDirection: TextDirection.ltr,
+                ), "시간표가 수정되었습니다");
+              }
+              Navigator.pop(context);
+            }
           },
         ),
         OutlineButton(
@@ -159,6 +189,32 @@ class _CreatePageState extends State<CreatePage> {
         )
       ],
     );
+  }
+
+  _isEmpty() {
+    bool isEmpty = true;
+
+    tt.subject.forEach((s) {
+      if (s != null) isEmpty = false;
+    });
+
+    return isEmpty;
+  }
+
+  _dialog(Icon icon, String mesg) async {
+    TipDialogHelper.show(context,
+      tipDialog: TipDialog.customIcon(
+        icon: icon,
+        tip: mesg,
+      ));
+    await new Future.delayed(new Duration(seconds: 1));
+    TipDialogHelper.dismiss(context);
+  }
+
+  _loadingDialog() async {
+    TipDialogHelper.loading(context, "Loading");
+//    await new Future.delayed(new Duration(seconds: 5));
+//    TipDialogHelper.dismiss(context);
   }
 
 }

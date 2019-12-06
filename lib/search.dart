@@ -302,11 +302,17 @@ class _SearchPanelState extends State<SearchPanel> {
                     subjectsIdx.add(7 * period - day);
                   });
 
-                  if (canAdd(subjectsIdx))
+                  if (canAdd(subjectsIdx)) {
                     addSubjects(subjectsIdx, record);
-                  else ; // TODO "이미 과목이 찼다고 알려주기"
-
-                  this.widget.callback(new CreatePage(tt: tt));
+                    this.widget.callback(new CreatePage(tt: tt));
+                  }
+                  else {
+                    final snackbar = SnackBar(
+                      backgroundColor: Color(0xFFFFCA55),
+                      content: Text('해당 시간에 이미 과목이 존재합니다 !', textAlign: TextAlign.center,),
+                    );
+                    Scaffold.of(context).showSnackBar(snackbar);// TODO "이미 과목이 찼다고 알려주기"
+                  }
                 },
               ),
             ],
@@ -331,6 +337,7 @@ class _SearchPanelState extends State<SearchPanel> {
     super.setState(() {
       subjectsIdx.forEach((idx) => tt.subject[idx] = subject.code);
     });
+    tt.credit += subject.credit;
   }
 
   //dropdown menus
