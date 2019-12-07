@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
 import 'package:tip_dialog/tip_dialog.dart';
@@ -8,7 +9,6 @@ import 'login.dart';
 void main(){
   debugPaintSizeEnabled = false;
   runApp(MyApp());
-
 }
 
 class MyApp extends StatelessWidget {

@@ -1,11 +1,18 @@
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'timetableDB.dart';
+import 'storage.dart';
 import 'create.dart';
-import 'mlkit.dart';
 import 'login.dart';
 import 'table.dart';
 
@@ -18,6 +25,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<StorageUploadTask> _tasks = <StorageUploadTask>[];
+  final FirebaseStorage storage = FirebaseStorage.instance;
+  final List<Widget> children = <Widget>[];
   bool is_home = true;
 
   @override
@@ -25,11 +35,17 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: _mybody(),
       bottomNavigationBar: _makeBottom(),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFFFFCA55),
-        onPressed: () => is_home? _dialog() : selecDialog(context),
-      ),
+      floatingActionButton: is_home
+          ? FloatingActionButton(
+              child: Icon(Icons.add),
+              backgroundColor: Color(0xFFFFCA55),
+              onPressed: () => _dialog(),
+            )
+          : FloatingActionButton(
+              child: Icon(Icons.file_upload),
+              backgroundColor: Color(0xFFFFCA55),
+              onPressed: () => _selecDialog(context),
+            ),
     );
   }
 
@@ -303,14 +319,6 @@ class _HomePageState extends State<HomePage> {
               child: Text("생성된 시간표가 없습니다.\n\n아래의 '+' 버튼을 통해 시간표를 생성해주세요.", textAlign: TextAlign.center, ),
             );
           else return _makeList(context, snapshot.data.documents);
-//          TT.fetchProducts(user.uid);
-//          if (TT.tts != null && TT.tts.length != 0) {
-//            return ListView.builder(
-//              itemCount: TT.tts.length,
-//              itemBuilder: (buildContext, index) =>
-//                  _makeListTile(index),
-//            );
-//          }
         }
       ),
     );
@@ -320,6 +328,10 @@ class _HomePageState extends State<HomePage> {
     );
 
     final _docbody = Container(
+      padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
+      child: ListView(
+        children: children,
+      ),
     );
 
     return SafeArea(
@@ -337,6 +349,49 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> uploadFile(String content) async {
+    Directory tempDir = await getTemporaryDirectory();
+    final File f = await File("${tempDir.path}/test.txt").create(); // 이름 적어
+
+    await f.writeAsString(content);
+    assert(await f.readAsString() == content);
+
+    final StorageReference ref = storage.ref().child("test"); // 이름 적어
+    final StorageUploadTask uploadTask = ref.putFile(f);
+
+    setState(() {
+      _tasks.add(uploadTask);
+      _tasks.forEach((StorageUploadTask task) {
+        final Widget tile = UploadTaskListTile(
+          task: task,
+          onDismissed: () => setState(() => _tasks.remove(task)),
+          onDownload: () => _downloadFile(task.lastSnapshot.ref),
+        );
+        children.add(tile);
+      });
+    });
+  }
+
+  Future<void> _downloadFile(StorageReference ref) async {
+    final String url = await ref.getDownloadURL();
+    final http.Response downloadData = await http.get(url);
+
+    final String fileContents = downloadData.body;
+
+    print("contents:" + fileContents);
+    final String name = await ref.getName();
+    final String bucket = await ref.getBucket();
+    final String path = await ref.getPath();
+//    _scaffoldKey.currentState.showSnackBar(SnackBar(
+//      content: Text(
+//        'Success!\n Downloaded $name \n from url: $url @ bucket: $bucket\n '
+//            'at path: $path \n\nFile contents: "$fileContents" \n'
+//            'Wrote "$tempFileContents" to tmp.txt',
+//        style: const TextStyle(color: Color.fromARGB(255, 0, 155, 0)),
+//      ),
+//    ));
   }
 
   TextEditingController _tableNameController = new TextEditingController();
@@ -414,4 +469,74 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
+  _selecDialog(BuildContext context) {
+    return _containerForSheet<String>(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text('사진을 선택해주세요.'),
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: Text('Album'),
+            onPressed: () {
+              Navigator.pop(context, 'Album');
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: Text('Camera'),
+            onPressed: () {
+              Navigator.pop(context, 'Camera');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text("Cancel"),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context, "Cancel"),
+        ),
+      ),
+    );
+  }
+
+  _containerForSheet<String>({BuildContext context, Widget child}) {
+    showCupertinoModalPopup<String>(
+      context: context,
+      builder: (BuildContext context) => child,
+    ).then<void>((String value) {
+      if (value == 'Camera') {
+        _cameraMlKit();
+      } else if (value == 'Album') {
+        _albumMlKit();
+      }
+    });
+  }
+
+  _cameraMlKit() async {
+    final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+    var _image = await ImagePicker.pickImage(source: ImageSource.camera);
+    File image = _image;
+
+    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(image);
+    final VisionText visionText = await textRecognizer.processImage(visionImage);
+
+    String text = visionText.text;
+    textRecognizer.close();
+
+    uploadFile(text);
+  }
+
+  _albumMlKit() async {
+    final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+    var _image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File image = _image;
+
+    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(image);
+    final VisionText visionText = await textRecognizer.processImage(visionImage);
+
+    String text = visionText.text;
+    textRecognizer.close();
+
+    uploadFile(text);
+  }
+
 }
