@@ -31,17 +31,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _mybody() {
-    final _title = Column(
-      children: <Widget>[
-        Image.asset(
-          'image/logo_large.png',
-          width: 300,
-          height: 100,
-          fit: BoxFit.contain,
+    final _title = Center(
+        child: Column(
+          children: <Widget>[
+            Image.asset(
+              'image/logo_large.png',
+              width: 300,
+              height: 100,
+              fit: BoxFit.contain,
+            ),
+            SizedBox(height: 5,),
+            Text('이번 학기를 채울 모든 경우의 수, HisTime'),
+          ],
         ),
-        SizedBox(height: 5,),
-        Text('이번 학기를 채울 모든 경우의 수, HisTime'),
-      ],
     );
 
     final _histimeLogin = Container(
@@ -120,7 +122,8 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _title,
-            _histimeLogin,
+//            _histimeLogin,
+            SizedBox(height: 70),
             _otherLogin,
           ],
         ),

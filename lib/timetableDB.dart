@@ -80,7 +80,7 @@ class Subjects {
         assert(map['location'] != null),
         assert(map['faculty'] != null),
         assert(map['color'] != null),
-      id = id ?? '',
+        id = id ?? '',
         code = map['code'],
         name = map['name'],
         prof = map['prof'],
