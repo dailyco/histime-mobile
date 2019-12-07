@@ -132,7 +132,8 @@ class TTModel extends ChangeNotifier {
 
 class Subjects {
   final String code, name, prof, type, time, field, location, faculty, id;
-  final int english, credit;
+  final int english;
+  final double credit;
   final bool like, grade, dualPF;
 
   Subjects.fromMap(Map<String, dynamic> map, String id)
@@ -156,7 +157,7 @@ class Subjects {
         english = map['english'],
         type = map['type'],
         time = map['time'],
-        credit = map['credit'],
+        credit = map['credit'].toDouble(),
         like = map['like'],
         grade = map['grade'],
         dualPF = map['dualPF'],
