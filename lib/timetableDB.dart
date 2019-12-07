@@ -92,7 +92,6 @@ class CRUD{
   Future<void> updateDocument(Map data , String id) {
     return ref.document(id).updateData(data) ;
   }
-
 }
 
 class TTModel extends ChangeNotifier {
@@ -130,7 +129,6 @@ class TTModel extends ChangeNotifier {
 
   Future addProduct(TimeTable data) async{
     var result  = await crud.addDocument(data.toJson()) ;
-
     return ;
 
   }
@@ -173,7 +171,6 @@ class Subjects {
 
   Subjects.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, snapshot.documentID);
-
 //  @override
 //  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
 }
@@ -203,6 +200,50 @@ class SubjectsModel extends ChangeNotifier {
 
   Stream<QuerySnapshot> fetchProductsAsStreamWithWhere(String filed, dynamic element) {
     return crud.streamDataCollectionSubjectWithWhere(filed, element);
+  }
+
+}
+
+class Favorite {
+  String id;
+  String uid;
+  String mlkit;
+  Map<dynamic, dynamic> subjects;
+
+  Favorite (String name, int order) {
+    this.uid = user.uid;
+    this.subjects = new Map<dynamic, dynamic>();
+  }
+
+  Favorite.fromMap(Map<String, dynamic> map, String id)
+      : assert(map['uid'] != null),
+        assert(map['subjects'] != null),
+        id = id ?? '',
+        uid = map['uid'],
+        subjects = map['subjects'];
+}
+
+class FavoriteModel extends ChangeNotifier {
+  CRUD crud = CRUD('favorite');
+
+  List<Favorite> favorite = [];
+
+  Future<List<Favorite>>fetchSubjects() async {
+    var result = await crud.getDataCollection();
+    favorite = result.documents
+        .map((doc) => Favorite.fromMap(doc.data, doc.documentID))
+        .toList();
+
+    return favorite;
+  }
+
+  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
+    return crud.streamDataCollection(uid);
+  }
+
+  Future<Favorite> getProductById(String id) async {
+    var doc = await crud.getDocumentById(id);
+    return Favorite.fromMap(doc.data, doc.documentID) ;
   }
 
 }

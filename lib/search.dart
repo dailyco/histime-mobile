@@ -8,8 +8,10 @@ import 'package:flutter/rendering.dart';
 import 'record.dart';
 import 'timetableDB.dart';
 import 'create.dart';
+import 'login.dart';
 
 final S = SubjectsModel();
+final F = FavoriteModel();
 double _panelHeightClosed = 30.0;
 
 class SearchPanel extends StatefulWidget {
@@ -67,7 +69,7 @@ class _SearchPanelState extends State<SearchPanel> {
 
     Stream<QuerySnapshot> streamSelect () {
       if (is_favorite)
-        return S.fetchProductsAsStreamWithWhere('like', true);
+        return F.fetchProductsAsStream(user.uid);
       else if (_currentFaculty != '전체')
         return S.fetchProductsAsStreamWithWhere('faculty', _searchFaculty);
       else if (_currentField != '전체')
@@ -447,7 +449,6 @@ class _SearchPanelState extends State<SearchPanel> {
             });
             if (value) _currentCredit.add(title);
             else if (!value) _currentCredit.remove(title);
-//            print(_currentCredit);
           },
         )
       ],
