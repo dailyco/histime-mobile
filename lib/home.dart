@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-//import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'timetableDB.dart';
 import 'create.dart';
+import 'mlkit.dart';
 import 'login.dart';
 import 'table.dart';
-import 'timetableDB.dart';
 
 final TT = TTModel();
 
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Color(0xFFFFCA55),
-        onPressed: () => is_home? _dialog() : _dialog(),
+        onPressed: () => is_home? _dialog() : selecDialog(context),
       ),
     );
   }
