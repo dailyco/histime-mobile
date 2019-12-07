@@ -8,9 +8,11 @@ import 'package:flutter/rendering.dart';
 import 'record.dart';
 import 'timetableDB.dart';
 import 'create.dart';
+import 'login.dart';
 
 double _panelHeightClosed = 30.0;
 final Sub = SubjectsModel();
+final Fav = FavoriteModel();
 
 class SearchPanel extends StatefulWidget {
   TimeTable tt;
@@ -70,7 +72,7 @@ class _SearchPanelState extends State<SearchPanel> {
 
     Stream<QuerySnapshot> streamSelect () {
       if (is_favorite)
-        return db.where('like', isEqualTo: true).snapshots();
+        return Fav.fetchProductsAsStream(user.uid);
       else if (_currentFaculty != '전체')
         return db.where('faculty', isEqualTo: _searchFaculty).snapshots();
       else if (_currentField != '전체')

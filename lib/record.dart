@@ -1,6 +1,3 @@
-import 'dart:ffi';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 List faculty = [
   "전체", "경영경제", "국제어문", "공간환경시스템", "글로벌리더십", "기계제어", "법학부", "상담복지", "생명과학", "언론정보", "전산전자", "콘텐츠융합디자인", "ICT창업",
