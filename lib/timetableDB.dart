@@ -59,6 +59,86 @@ class TimeTable {
 //  String toString() => "Record<$name:$votes>";
 }
 
+class Subjects {
+  final String code, name, prof, type, time, field, location, faculty, id, color;
+  final int english;
+  final double credit;
+  final bool grade, dualPF;
+  List<dynamic> uids;
+
+  Subjects.fromMap(Map<String, dynamic> map, String id)
+      : assert(map['code'] != null),
+        assert(map['name'] != null),
+        assert(map['prof'] != null),
+        assert(map['english'] != null),
+        assert(map['type'] != null),
+        assert(map['time'] != null),
+        assert(map['credit'] != null),
+        assert(map['grade'] != null),
+        assert(map['dualPF'] != null),
+        assert(map['field'] != null),
+        assert(map['location'] != null),
+        assert(map['faculty'] != null),
+        assert(map['color'] != null),
+      id = id ?? '',
+        code = map['code'],
+        name = map['name'],
+        prof = map['prof'],
+        english = map['english'],
+        type = map['type'],
+        time = map['time'],
+        credit = map['credit'].toDouble(),
+        grade = map['grade'],
+        dualPF = map['dualPF'],
+        field = map['field'],
+        location = map['location'],
+        faculty = map['faculty'],
+        color = map['color'],
+        uids = map['uids'];
+
+  Subjects.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, snapshot.documentID);
+
+  toJson() {
+    return {
+      "uids": uids,
+    };
+  }
+//  @override
+//  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
+}
+
+class Favorite {
+  String id;
+  String uid;
+  List<dynamic> mlkit;
+  List<dynamic> subjects;
+
+  Favorite (String name, int order) {
+    this.uid = user.uid;
+    this.subjects = new List<dynamic>();
+    this.mlkit = new List<dynamic>();
+  }
+
+  Favorite.fromMap(Map<String, dynamic> map, String id)
+      : assert(map['uid'] != null),
+        id = id ?? '',
+        uid = map['uid'],
+        mlkit = map['mlkit'],
+        subjects = map['subjects'];
+
+  Favorite.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, snapshot.documentID);
+
+  toJson() {
+    return {
+      "uid": uid,
+      "mlkit": mlkit,
+      "subjects": subjects,
+    };
+  }
+}
+
 class CRUD{
   final Firestore _db = Firestore.instance;
   final String path;
@@ -74,8 +154,14 @@ class CRUD{
   Stream<QuerySnapshot> streamDataCollection(String uid) {
     return ref.where('uid', isEqualTo: uid).orderBy("order", descending: false).snapshots();
   }
+//  Stream<QuerySnapshot> streamDataCollectionFavorite(String uid) {
+//    return ref.where('uid', isEqualTo: uid).snapshots();
+//  }
   Stream<QuerySnapshot> streamDataCollectionSubject() {
     return ref.snapshots();
+  }
+  Stream<QuerySnapshot> streamDataCollectionSubjectFavorite(String uid) {
+    return ref.where('uids', arrayContains: uid).snapshots();
   }
   Stream<QuerySnapshot> streamDataCollectionSubjectWithWhere(String field, dynamic e) {
     return ref.where(field, isEqualTo: e).snapshots();
@@ -125,7 +211,7 @@ class TTModel extends ChangeNotifier {
     return ;
   }
 
-  Future updateProduct(TimeTable data,String id) async{
+  Future updateProduct(TimeTable data, String id) async{
     await crud.updateDocument(data.toJson(), id) ;
     return ;
   }
@@ -135,47 +221,6 @@ class TTModel extends ChangeNotifier {
     return ;
 
   }
-}
-
-class Subjects {
-  final String code, name, prof, type, time, field, location, faculty, id, color;
-  final int english;
-  final double credit;
-  final bool grade, dualPF;
-
-  Subjects.fromMap(Map<String, dynamic> map, String id)
-      : assert(map['code'] != null),
-        assert(map['name'] != null),
-        assert(map['prof'] != null),
-        assert(map['english'] != null),
-        assert(map['type'] != null),
-        assert(map['time'] != null),
-        assert(map['credit'] != null),
-        assert(map['grade'] != null),
-        assert(map['dualPF'] != null),
-        assert(map['field'] != null),
-        assert(map['location'] != null),
-        assert(map['faculty'] != null),
-        assert(map['color'] != null),
-        id = id ?? '',
-        code = map['code'],
-        name = map['name'],
-        prof = map['prof'],
-        english = map['english'],
-        type = map['type'],
-        time = map['time'],
-        credit = map['credit'].toDouble(),
-        grade = map['grade'],
-        dualPF = map['dualPF'],
-        field = map['field'],
-        location = map['location'],
-        faculty = map['faculty'],
-        color = map['color'];
-
-  Subjects.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, snapshot.documentID);
-//  @override
-//  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
 }
 
 class SubjectsModel extends ChangeNotifier {
@@ -201,6 +246,10 @@ class SubjectsModel extends ChangeNotifier {
     return crud.streamDataCollectionSubject();
   }
 
+  Stream<QuerySnapshot> fetchProductsAsStreamFavorite(String uid) {
+    return crud.streamDataCollectionSubjectFavorite(uid);
+  }
+
   Stream<QuerySnapshot> fetchProductsAsStreamWithWhere(String filed, dynamic element) {
     return crud.streamDataCollectionSubjectWithWhere(filed, element);
   }
@@ -208,48 +257,33 @@ class SubjectsModel extends ChangeNotifier {
   Stream<QuerySnapshot> fetchProductsAsStreamWithWhereGreater(String filed, dynamic element) {
     return crud.streamDataCollectionSubjectWithWhereGreater(filed, element);
   }
+
+  Future updateProduct(Subjects data, String id) async{
+    await crud.updateDocument(data.toJson(), id) ;
+    return ;
+  }
 }
 
-class Favorite {
-  String id;
-  String uid;
-  String mlkit;
-  Map<dynamic, dynamic> subjects;
-
-  Favorite (String name, int order) {
-    this.uid = user.uid;
-    this.subjects = new Map<dynamic, dynamic>();
-  }
-
-  Favorite.fromMap(Map<String, dynamic> map, String id)
-      : assert(map['uid'] != null),
-        assert(map['subjects'] != null),
-        id = id ?? '',
-        uid = map['uid'],
-        subjects = map['subjects'];
-}
-
-class FavoriteModel extends ChangeNotifier {
-  CRUD crud = CRUD('favorite');
-
-  List<Favorite> favorite = [];
-
-  Future<List<Favorite>>fetchSubjects() async {
-    var result = await crud.getDataCollection();
-    favorite = result.documents
-        .map((doc) => Favorite.fromMap(doc.data, doc.documentID))
-        .toList();
-
-    return favorite;
-  }
-
-  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
-    return crud.streamDataCollection(uid);
-  }
-
-  Future<Favorite> getProductById(String id) async {
-    var doc = await crud.getDocumentById(id);
-    return Favorite.fromMap(doc.data, doc.documentID) ;
-  }
-
-}
+//class FavoriteModel extends ChangeNotifier {
+//  CRUD crud = CRUD('favorite');
+//
+//  List<Favorite> favorite = [];
+//
+//  Future<List<Favorite>>fetchSubjects() async {
+//    var result = await crud.getDataCollection();
+//    favorite = result.documents
+//        .map((doc) => Favorite.fromMap(doc.data, doc.documentID))
+//        .toList();
+//
+//    return favorite;
+//  }
+//
+//  Stream<QuerySnapshot> fetchProductsAsStream(String uid) {
+//    return crud.streamDataCollectionFavorite(uid);
+//  }
+//
+//  Future<Favorite> getProductById(String id) async {
+//    var doc = await crud.getDocumentById(id);
+//    return Favorite.fromMap(doc.data, doc.documentID) ;
+//  }
+//}

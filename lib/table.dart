@@ -112,7 +112,7 @@ Widget _tableTitle(TimeTable tt, Function callback) {
 //              callback(new CreatePage(tt: tt));
             },
             style: TextStyle(color: Colors.white, fontSize: 17),
-            enabled: false,
+//            enabled: false,
           ),
 //          child: Text(tt.name, style: TextStyle(color: Colors.white, fontSize: 17),),
         ),
@@ -222,6 +222,7 @@ _findSubject(String id) {
 _clearTimetable(TimeTable tt, Function callback) {
   for (int i = 0; i < tt.subject.length; i++)
     tt.subject[i] = null;
+  tt.credit = 0;
   callback(new CreatePage(tt: tt));
 }
 
