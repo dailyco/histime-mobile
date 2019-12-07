@@ -59,6 +59,8 @@ _cameraMlKit() async {
   String text = visionText.text;
   print(text);
 
+  textRecognizer.close();
+
 //  for (TextBlock block in visionText.blocks) {
 //    final Rect boundingBox = block.boundingBox;
 //    final List<Offset> cornerPoints = block.cornerPoints;
@@ -84,4 +86,6 @@ _albumMlKit() async {
 
   String text = visionText.text;
   print(text);
+
+  textRecognizer.close();
 }
