@@ -79,9 +79,9 @@ class _SearchPanelState extends State<SearchPanel> {
       else if (_currentEng != '전체')
         return S.fetchProductsAsStreamWithWhere('english', _searchEng);
       else if (_searchCredit.isNotEmpty)
-        return S.fetchProductsAsStreamWithWhere('credit', _searchCredit[0]);
+        return S.fetchProductsAsStreamWithWhereGreater('credit', _searchCredit[0]);
       else if (searchController.text.isNotEmpty)
-        return S.fetchProductsAsStreamWithWhere('name', _searchName);
+        return S.fetchProductsAsStreamWithWhereGreater('name', _searchName);
       else
         return S.fetchProductsAsStream();
     }
@@ -545,22 +545,15 @@ class _SearchPanelState extends State<SearchPanel> {
                     )
                   ],
                 ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text('시간대',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
-                    ),
-                    Expanded(
-                      child: RaisedButton(
-                        child: Text('시간대 선택', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        color: Color(0xFF225B95),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ],
+                Center(
+                  child: RaisedButton(
+                    child: Text('초기화', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    color: Color(0xFF225B95),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                    onPressed: () {
+                      initState();
+                    },
+                  ),
                 ),
                 SizedBox(height: 30),
                 Center(

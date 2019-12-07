@@ -80,6 +80,9 @@ class CRUD{
   Stream<QuerySnapshot> streamDataCollectionSubjectWithWhere(String field, dynamic e) {
     return ref.where(field, isEqualTo: e).snapshots();
   }
+  Stream<QuerySnapshot> streamDataCollectionSubjectWithWhereGreater(String field, dynamic e) {
+    return ref.where(field, isGreaterThanOrEqualTo: e).snapshots();
+  }
   Future<DocumentSnapshot> getDocumentById(String id) {
     return ref.document(id).get();
   }
@@ -202,6 +205,9 @@ class SubjectsModel extends ChangeNotifier {
     return crud.streamDataCollectionSubjectWithWhere(filed, element);
   }
 
+  Stream<QuerySnapshot> fetchProductsAsStreamWithWhereGreater(String filed, dynamic element) {
+    return crud.streamDataCollectionSubjectWithWhereGreater(filed, element);
+  }
 }
 
 class Favorite {
