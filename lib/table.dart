@@ -6,6 +6,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'timetableDB.dart';
 import 'create.dart';
+import 'search.dart';
 
 showTable(BuildContext context, TimeTable tt) {
   double _height = MediaQuery.of(context).size.height;
@@ -180,12 +181,14 @@ Widget _tableBody(BuildContext context, TimeTable tt, Function callback) {
 }
 
 Widget _makeTimeSubject(BuildContext context, TimeTable tt, int idx, Function callback) {
+  Subjects _subject = _findSubject(tt.subject[idx]);
+
   return GestureDetector(
     child: Container(
       color: RandomColor().randomColor(colorHue: ColorHue.orange),
-      child: Center(child: Text(tt.subject[idx]),),
+      child: Center(child: Text(_subject.name + "(" + _subject.credit.toString() + ")")),
     ),
-    onLongPress: () => _checkDelete(context, tt, idx, callback),
+    onLongPress: () => _checkDelete(context, tt, _subject, callback),
   );
 }
 
@@ -204,18 +207,28 @@ Widget _tableBottom(TimeTable tt) {
   );
 }
 
+_findSubject(String id) {
+  Subjects _s;
+
+  S.subjects.forEach((s) {
+    if (s.id == id) _s = s;
+  });
+
+  return _s;
+}
+
 _clearTimetable(TimeTable tt, Function callback) {
   for (int i = 0; i < tt.subject.length; i++)
     tt.subject[i] = null;
   callback(new CreatePage(tt: tt));
 }
 
-_checkDelete(BuildContext context, TimeTable tt, int idx, Function callback) {
+_checkDelete(BuildContext context, TimeTable tt, Subjects s, Function callback) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
       return CupertinoAlertDialog(
-        content: Text("'${tt.subject[idx]}'을 삭제하시겠습니까?",
+        content: Text("'${s.name}'을 삭제하시겠습니까?",
           textAlign: TextAlign.center,),
         actions: <Widget>[
           FlatButton(
@@ -231,7 +244,7 @@ _checkDelete(BuildContext context, TimeTable tt, int idx, Function callback) {
                 fontWeight: FontWeight.bold,),
             ),
             onPressed: () {
-              _deletesubjects(tt, idx);
+              _deletesubjects(s, tt);
               callback(new CreatePage(tt: tt));
               Navigator.pop(context);
             },
@@ -242,8 +255,8 @@ _checkDelete(BuildContext context, TimeTable tt, int idx, Function callback) {
   );
 }
 
-_deletesubjects(TimeTable tt, int idx) {
-  String id = tt.subject[idx];
+_deletesubjects(Subjects s, TimeTable tt) {
+  String id = s.id;
 
   for (int i = 0; i < tt.subject.length; i++) {
     if (tt.subject[i] == id)
@@ -251,5 +264,5 @@ _deletesubjects(TimeTable tt, int idx) {
   }
 
   // TODO 전제척으로 subject id로 작업하는걸로 바꾸고 그에 맞게 credit도 수정
-  tt.credit -= 0;
+  tt.credit -= s.credit;
 }
