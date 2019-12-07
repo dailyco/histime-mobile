@@ -11,7 +11,7 @@ import 'create.dart';
 import 'login.dart';
 
 final S = SubjectsModel();
-final F = FavoriteModel();
+//final F = FavoriteModel();
 double _panelHeightClosed = 30.0;
 
 class SearchPanel extends StatefulWidget {
@@ -27,6 +27,7 @@ class SearchPanel extends StatefulWidget {
 class _SearchPanelState extends State<SearchPanel> {
   TimeTable tt;
   bool is_favorite = false;
+  bool favorite_empty = true;
   String _searchFaculty = '';
   String _searchField = '';
   String _searchType = '';
@@ -68,22 +69,14 @@ class _SearchPanelState extends State<SearchPanel> {
   Widget searchpanel(BuildContext context) {
 
     Stream<QuerySnapshot> streamSelect () {
-      if (is_favorite)
-        return F.fetchProductsAsStream(user.uid);
-      else if (_currentFaculty != '전체')
-        return S.fetchProductsAsStreamWithWhere('faculty', _searchFaculty);
-      else if (_currentField != '전체')
-        return S.fetchProductsAsStreamWithWhere('field', _searchField);
-      else if (_currentType != '전체')
-        return S.fetchProductsAsStreamWithWhere('type', _searchType);
-      else if (_currentEng != '전체')
-        return S.fetchProductsAsStreamWithWhere('english', _searchEng);
-      else if (_searchCredit.isNotEmpty)
-        return S.fetchProductsAsStreamWithWhere('credit', _searchCredit[0]);
-      else if (searchController.text.isNotEmpty)
-        return S.fetchProductsAsStreamWithWhere('name', _searchName);
-      else
-        return S.fetchProductsAsStream();
+      if (is_favorite) return S.fetchProductsAsStreamFavorite(user.uid);
+      else if (_currentFaculty != '전체') return S.fetchProductsAsStreamWithWhere('faculty', _searchFaculty);
+      else if (_currentField != '전체') return S.fetchProductsAsStreamWithWhere('field', _searchField);
+      else if (_currentType != '전체') return S.fetchProductsAsStreamWithWhere('type', _searchType);
+      else if (_currentEng != '전체') return S.fetchProductsAsStreamWithWhere('english', _searchEng);
+      else if (_searchCredit.isNotEmpty) return S.fetchProductsAsStreamWithWhere('credit', _searchCredit[0]);
+      else if (searchController.text.isNotEmpty) return S.fetchProductsAsStreamWithWhere('name', _searchName);
+      else return S.fetchProductsAsStream();
     }
     return Column(
       children: <Widget>[
@@ -92,12 +85,15 @@ class _SearchPanelState extends State<SearchPanel> {
         StreamBuilder<QuerySnapshot>(
             stream: streamSelect(),
             builder: (context, snapshot) {
+              S.subjects.clear();
               if (!snapshot.hasData) return LinearProgressIndicator();
-              return _subjectList(context, snapshot.data.documents);
+              else return _subjectList(context, snapshot.data.documents);
             }),
       ],
     );
   }
+
+  //Expanded(child: Center(child: Text("즐겨찾기로 등록된 과목이 없습니다.\n\n'☆' 버튼을 눌러 즐겨찾기 과목을 등록하세요", textAlign: TextAlign.center, ),),);
 
   Widget _panelheader() {
     return  Container(
@@ -127,11 +123,11 @@ class _SearchPanelState extends State<SearchPanel> {
         child: Row(
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.favorite),
+              icon: Icon(Icons.star),
               color: Color(0xFFFFCA55),
               onPressed: () {
                 setState(() {
-                  is_favorite = true ;
+                  is_favorite = true;
                 });
               },
             ),
@@ -195,18 +191,33 @@ class _SearchPanelState extends State<SearchPanel> {
             Expanded(
               child: Container(),
             ),
-            Container(
-              padding: EdgeInsets.only(right: 5,),
-              child: SizedBox(
-                width: 100,
-                child: RaisedButton(
-                  child: Text('모두 추가', style: TextStyle(color: Colors.white)),
-                  onPressed: () {},
-                  color: Color(0xFFFFCA55),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                ),
-              ),
-            ),
+//            Container(
+//              padding: EdgeInsets.only(right: 5,),
+//              child: SizedBox(
+//                width: 100,
+//                child: RaisedButton(
+//                  child: Text('모두 추가', style: TextStyle(color: Colors.white)),
+//                  onPressed: () {
+//                    print(S.subjects.length);
+////                    _computeSubjectIdx();
+////
+////                    if (canAdd(subjectsIdx)) {
+////                      addSubjects(subjectsIdx, record);
+////                      this.widget.callback(new CreatePage(tt: tt));
+////                    }
+////                    else {
+////                      final snackbar = SnackBar(
+////                        backgroundColor: Color(0xFFFFCA55),
+////                        content: Text('해당 시간에 이미 과목이 존재합니다 !', textAlign: TextAlign.center,),
+////                      );
+////                      Scaffold.of(context).showSnackBar(snackbar);
+////                    }
+//                  },
+//                  color: Color(0xFFFFCA55),
+//                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+//                ),
+//              ),
+//            ),
           ],
         ),
       ),
@@ -216,9 +227,8 @@ class _SearchPanelState extends State<SearchPanel> {
   Widget _subjectList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return Expanded(
         child: ListView(
-          children:
-          snapshot.map((data) => _subjectListItem(data)).toList(),
-        )
+          children: snapshot.map((data) => _subjectListItem(data)).toList(),
+        ),
     );
   }
 
@@ -226,6 +236,10 @@ class _SearchPanelState extends State<SearchPanel> {
     final record = Subjects.fromSnapshot(data) ;
     S.subjects.add(record);
 
+    return Tile(record);
+  }
+
+  Widget Tile(Subjects record) {
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),
@@ -264,52 +278,35 @@ class _SearchPanelState extends State<SearchPanel> {
           ),
           Column(
             children: <Widget>[
-              false ? IconButton(
-                icon: Icon(Icons.star),
-                color: Color(0xFFFFCA55),
-                onPressed: () async {
-//                  record.reference.updateData({'like' : false});
-                },
-              )
-              : IconButton(
-                icon: Icon(Icons.star_border),
-                color: Color(0xFFFFCA55),
-                onPressed: () async {
-//                  record.reference.updateData({'like' : true});
-                },
-              ),
+              record.uids.contains(user.uid)
+                  ? IconButton(
+                      icon: Icon(Icons.star),
+                      color: Color(0xFFFFCA55),
+                      onPressed: () async {
+                        List<dynamic> lst = List<dynamic>();
+                        for (int i = 0; i < record.uids.length; i++)
+                          lst.add(record.uids[i]);
+                        lst.remove(user.uid);
+                        record.uids = lst;
+                        S.updateProduct(record, record.id);
+                      },
+                    )
+                  : IconButton(
+                      icon: Icon(Icons.star_border),
+                      color: Color(0xFFFFCA55),
+                      onPressed: () async {
+                        List<dynamic> lst = List<dynamic>();
+                        for (int i = 0; i < record.uids.length; i++)
+                          lst.add(record.uids[i]);
+                        lst.add(user.uid);
+                        record.uids = lst;
+                        S.updateProduct(record, record.id);
+                      },
+                    ),
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  int day = 0;
-                  int period = 0;
-                  List<int> subjectsIdx = [];
-
-                  List<String> times = record.time.split(',');
-                  times.forEach((e) {
-                    period = int.parse(e.substring(1));
-                    switch (e[0]) {
-                      case '월':
-                        day = 6;
-                        break;
-                      case '화':
-                        day = 5;
-                        break;
-                      case '수':
-                        day = 4;
-                        break;
-                      case '목':
-                        day = 3;
-                        break;
-                      case '금':
-                        day = 2;
-                        break;
-                      case '토':
-                        day = 1;
-                        break;
-                    }
-                    subjectsIdx.add(7 * period - day);
-                  });
+                  List<int> subjectsIdx = _computeSubjectIdx(record);
 
                   if (canAdd(subjectsIdx)) {
                     addSubjects(subjectsIdx, record);
@@ -329,6 +326,40 @@ class _SearchPanelState extends State<SearchPanel> {
         ],
       ),
     );
+  }
+
+  _computeSubjectIdx(Subjects record) {
+    int day = 0;
+    int period = 0;
+    List<int> subjectsIdx = [];
+
+    List<String> times = record.time.split(',');
+    times.forEach((e) {
+      period = int.parse(e.substring(1));
+      switch (e[0]) {
+        case '월':
+          day = 6;
+          break;
+        case '화':
+          day = 5;
+          break;
+        case '수':
+          day = 4;
+          break;
+        case '목':
+          day = 3;
+          break;
+        case '금':
+          day = 2;
+          break;
+        case '토':
+          day = 1;
+          break;
+      }
+      subjectsIdx.add(7 * period - day);
+    });
+
+    return subjectsIdx;
   }
 
   bool canAdd(List<int> subjectsIdx) {
