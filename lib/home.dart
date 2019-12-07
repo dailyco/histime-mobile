@@ -283,16 +283,7 @@ class _HomePageState extends State<HomePage> {
                 Text("credit : " + tt.credit.toString(), style: TextStyle(color: Colors.white))
               ],
             ),
-            // TODO show time table
             onTap: () => showTable(context, tt),
-//            trailing: Container(
-//              padding: EdgeInsets.only(right: 10.0),
-//              child: IconButton(
-//                  icon: Icon(Icons.edit, color: Colors.white, size: 25,),
-//                  onPressed: () {
-//
-//                  }),
-//            ),
           ),
         ),
       );

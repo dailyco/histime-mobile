@@ -9,12 +9,11 @@ import 'record.dart';
 import 'timetableDB.dart';
 import 'create.dart';
 
+final S = SubjectsModel();
 double _panelHeightClosed = 30.0;
-final Sub = SubjectsModel();
 
 class SearchPanel extends StatefulWidget {
   TimeTable tt;
-  Subjects sub;
   Function callback;
 
   SearchPanel({Key key, @required this.tt, @required this.callback}) : super(key: key);
@@ -25,7 +24,6 @@ class SearchPanel extends StatefulWidget {
 
 class _SearchPanelState extends State<SearchPanel> {
   TimeTable tt;
-  Subjects sub;
   bool is_favorite = false;
   String _searchFaculty = '';
   String _searchField = '';
@@ -58,7 +56,6 @@ class _SearchPanelState extends State<SearchPanel> {
     super.initState();
   }
 
-  final db = Firestore.instance.collection('subjects');
   @override
   Widget build(BuildContext context) {
     return Scaffold (
@@ -70,21 +67,21 @@ class _SearchPanelState extends State<SearchPanel> {
 
     Stream<QuerySnapshot> streamSelect () {
       if (is_favorite)
-        return db.where('like', isEqualTo: true).snapshots();
+        return S.fetchProductsAsStreamWithWhere('like', true);
       else if (_currentFaculty != '전체')
-        return db.where('faculty', isEqualTo: _searchFaculty).snapshots();
+        return S.fetchProductsAsStreamWithWhere('faculty', _searchFaculty);
       else if (_currentField != '전체')
-        return db.where('field', isEqualTo: _searchField).snapshots();
+        return S.fetchProductsAsStreamWithWhere('field', _searchField);
       else if (_currentType != '전체')
-        return db.where('type', isEqualTo: _searchType).snapshots();
+        return S.fetchProductsAsStreamWithWhere('type', _searchType);
       else if (_currentEng != '전체')
-        return db.where('english', isEqualTo: _searchEng).snapshots();
+        return S.fetchProductsAsStreamWithWhere('english', _searchEng);
       else if (_searchCredit.isNotEmpty)
-        return db.where('credit', isEqualTo: _searchCredit[0]).snapshots();
+        return S.fetchProductsAsStreamWithWhere('credit', _searchCredit[0]);
       else if (searchController.text.isNotEmpty)
-        return db.where('name', isEqualTo: _searchName).snapshots();
+        return S.fetchProductsAsStreamWithWhere('name', _searchName);
       else
-        return db.snapshots();
+        return S.fetchProductsAsStream();
     }
     return Column(
       children: <Widget>[
@@ -225,6 +222,8 @@ class _SearchPanelState extends State<SearchPanel> {
 
   Widget _subjectListItem(DocumentSnapshot data) {
     final record = Subjects.fromSnapshot(data) ;
+    S.subjects.add(record);
+
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),
@@ -263,7 +262,7 @@ class _SearchPanelState extends State<SearchPanel> {
           ),
           Column(
             children: <Widget>[
-              record.like ? IconButton(
+              false ? IconButton(
                 icon: Icon(Icons.star),
                 color: Color(0xFFFFCA55),
                 onPressed: () async {
@@ -319,7 +318,7 @@ class _SearchPanelState extends State<SearchPanel> {
                       backgroundColor: Color(0xFFFFCA55),
                       content: Text('해당 시간에 이미 과목이 존재합니다 !', textAlign: TextAlign.center,),
                     );
-                    Scaffold.of(context).showSnackBar(snackbar);// TODO "이미 과목이 찼다고 알려주기"
+                    Scaffold.of(context).showSnackBar(snackbar);
                   }
                 },
               ),
@@ -343,7 +342,7 @@ class _SearchPanelState extends State<SearchPanel> {
 
   addSubjects(List<int> subjectsIdx, Subjects subject) {
     super.setState(() {
-      subjectsIdx.forEach((idx) => tt.subject[idx] = subject.code);
+      subjectsIdx.forEach((idx) => tt.subject[idx] = subject.id);
     });
     tt.credit += subject.credit;
   }

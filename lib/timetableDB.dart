@@ -74,6 +74,12 @@ class CRUD{
   Stream<QuerySnapshot> streamDataCollection(String uid) {
     return ref.where('uid', isEqualTo: uid).orderBy("order", descending: false).snapshots();
   }
+  Stream<QuerySnapshot> streamDataCollectionSubject() {
+    return ref.snapshots();
+  }
+  Stream<QuerySnapshot> streamDataCollectionSubjectWithWhere(String field, dynamic e) {
+    return ref.where(field, isEqualTo: e).snapshots();
+  }
   Future<DocumentSnapshot> getDocumentById(String id) {
     return ref.document(id).get();
   }
@@ -131,10 +137,10 @@ class TTModel extends ChangeNotifier {
 }
 
 class Subjects {
-  final String code, name, prof, type, time, field, location, faculty, id;
+  final String code, name, prof, type, time, field, location, faculty, id, color;
   final int english;
   final double credit;
-  final bool like, grade, dualPF;
+  final bool grade, dualPF;
 
   Subjects.fromMap(Map<String, dynamic> map, String id)
       : assert(map['code'] != null),
@@ -144,12 +150,12 @@ class Subjects {
         assert(map['type'] != null),
         assert(map['time'] != null),
         assert(map['credit'] != null),
-        assert(map['like'] != null),
         assert(map['grade'] != null),
         assert(map['dualPF'] != null),
         assert(map['field'] != null),
         assert(map['location'] != null),
         assert(map['faculty'] != null),
+        assert(map['color'] != null),
         id = id ?? '',
         code = map['code'],
         name = map['name'],
@@ -158,21 +164,15 @@ class Subjects {
         type = map['type'],
         time = map['time'],
         credit = map['credit'].toDouble(),
-        like = map['like'],
         grade = map['grade'],
         dualPF = map['dualPF'],
         field = map['field'],
         location = map['location'],
-        faculty = map['faculty'];
+        faculty = map['faculty'],
+        color = map['color'];
 
   Subjects.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, snapshot.documentID);
-
-  toJson() {
-    return {
-      "like": like,
-    };
-  }
 
 //  @override
 //  String toString() => "Record<$code:$name:$prof:$english:$type:$credit:$time>";
@@ -194,12 +194,15 @@ class SubjectsModel extends ChangeNotifier {
 
   Future<Subjects> getProductById(String id) async {
     var doc = await crud.getDocumentById(id);
-    return Subjects.fromMap(doc.data, doc.documentID) ;
+    return Subjects.fromMap(doc.data, doc.documentID);
   }
 
-  Future updateProduct(Subjects data, String id) async{
-    await crud.updateDocument(data.toJson(), id) ;
-    return ;
+  Stream<QuerySnapshot> fetchProductsAsStream() {
+    return crud.streamDataCollectionSubject();
+  }
+
+  Stream<QuerySnapshot> fetchProductsAsStreamWithWhere(String filed, dynamic element) {
+    return crud.streamDataCollectionSubjectWithWhere(filed, element);
   }
 
 }

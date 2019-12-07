@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:sliding_up_panel/sliding_up_panel.dart' as prefix0;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tip_dialog/tip_dialog.dart';
-import 'package:tip_dialog/tip_dialog.dart' as prefix1;
 
 import 'login.dart';
 import 'table.dart';
