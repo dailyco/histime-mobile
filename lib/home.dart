@@ -31,7 +31,22 @@ class _HomePageState extends State<HomePage> {
   bool is_home = true;
 
   @override
+  void initState() {
+    _tasks.forEach((StorageUploadTask task) {
+      final Widget tile = UploadTaskListTile(
+        task: task,
+        onDismissed: () => setState(() => _tasks.remove(task)),
+        onDownload: () => _downloadFile(task.lastSnapshot.ref),
+      );
+      children.add(tile);
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: _mybody(),
       bottomNavigationBar: _makeBottom(),

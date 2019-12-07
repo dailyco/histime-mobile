@@ -41,20 +41,22 @@ showTable(BuildContext context, TimeTable tt) {
                     crossAxisCount: 13,
                     itemCount: 77,
                     itemBuilder: (BuildContext context, int index) {
+                      Subjects _subject = _findSubject(tt.subject[index]);
+
                       return (index % 7) == 0
-                          ? Container(
-                              decoration: BoxDecoration(
-                                border: Border(right: BorderSide(color: Color(0xFF225B95)), /*bottom: BorderSide(color: Color(0xFF225B95)),*/),
-                              ),
-                              child: Center(child: Text(((index / 7) + 1).toInt().toString(), style: TextStyle(fontSize: 15,),),
-                              ),
-                            )
-                          : tt.subject[index] == null
-                          ? null
-                          : Container(
-                              color: RandomColor().randomColor(colorHue: ColorHue.orange),
-                              child: Center(child: Text(tt.subject[index]),),
-                            );
+                        ? Container(
+                            decoration: BoxDecoration(
+                              border: Border(right: BorderSide(color: Color(0xFF225B95)), /*bottom: BorderSide(color: Color(0xFF225B95)),*/),
+                            ),
+                            child: Center(child: Text(((index / 7) + 1).toInt().toString(), style: TextStyle(fontSize: 15,),),
+                            ),
+                          )
+                        : tt.subject[index] == null
+                        ? null
+                        : Container(
+                            color: Color(int.parse(_subject.color)),
+                            child: Center(child: Text(_subject.name + "(" + _subject.credit.toString() + ")", style: TextStyle(fontSize: 10, ), textAlign: TextAlign.center,),),
+                          );
                     },
                     staggeredTileBuilder: (int index) =>
                         StaggeredTile.count((index % 7) == 0? 1 : 2, 3),
@@ -185,8 +187,8 @@ Widget _makeTimeSubject(BuildContext context, TimeTable tt, int idx, Function ca
 
   return GestureDetector(
     child: Container(
-      color: RandomColor().randomColor(colorHue: ColorHue.orange),
-      child: Center(child: Text(_subject.name + "(" + _subject.credit.toString() + ")")),
+      color: Color(int.parse(_subject.color)),
+      child: Center(child: Text(_subject.name + "(" + _subject.credit.toString() + ")", style: TextStyle(fontSize: 10, ), textAlign: TextAlign.center,),),
     ),
     onLongPress: () => _checkDelete(context, tt, _subject, callback),
   );
