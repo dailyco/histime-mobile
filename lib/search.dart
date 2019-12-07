@@ -30,7 +30,8 @@ class _SearchPanelState extends State<SearchPanel> {
   String _searchFaculty = '';
   String _searchField = '';
   String _searchType = '';
-  String _searchEng = '';
+  int _searchEng = 0;
+  var _searchCredit = [];
   String _searchName = '';
 
   _SearchPanelState({Key key, @required this.tt});
@@ -50,6 +51,9 @@ class _SearchPanelState extends State<SearchPanel> {
     _englishMenuItems = getEngItems();
     _currentEng = _englishMenuItems[0].value;
 
+    _searchCredit.clear();
+    val05 = false; val1 = false; val2 = false; val3 = false;
+
     searchController = new TextEditingController();
     super.initState();
   }
@@ -57,7 +61,7 @@ class _SearchPanelState extends State<SearchPanel> {
   final db = Firestore.instance.collection('subjects');
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold (
       body: searchpanel(context),
     );
   }
@@ -75,8 +79,10 @@ class _SearchPanelState extends State<SearchPanel> {
         return db.where('type', isEqualTo: _searchType).snapshots();
       else if (_currentEng != '전체')
         return db.where('english', isEqualTo: _searchEng).snapshots();
-//      else if (searchController.text.isNotEmpty)
-//        return db.where('name', isEqualTo: _searchName).snapshots();
+      else if (_searchCredit.isNotEmpty)
+        return db.where('credit', isEqualTo: _searchCredit[0]).snapshots();
+      else if (searchController.text.isNotEmpty)
+        return db.where('name', isEqualTo: _searchName).snapshots();
       else
         return db.snapshots();
     }
@@ -156,7 +162,9 @@ class _SearchPanelState extends State<SearchPanel> {
                 child: RaisedButton(
                   child: Text('검색', style: TextStyle(color: Colors.white)),
                   onPressed: () {
-                    if (searchController.text.isNotEmpty) _searchName = searchController.text;
+                    setState(() {
+                      if (searchController.text.isNotEmpty) _searchName = searchController.text;
+                    });
                   },
                   color: Color(0xFFFFCA55),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -216,7 +224,7 @@ class _SearchPanelState extends State<SearchPanel> {
   }
 
   Widget _subjectListItem(DocumentSnapshot data) {
-    final record = Record.fromSnapshot(data) ;
+    final record = Subjects.fromSnapshot(data) ;
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF225B95), width: 2)),
@@ -259,14 +267,14 @@ class _SearchPanelState extends State<SearchPanel> {
                 icon: Icon(Icons.star),
                 color: Color(0xFFFFCA55),
                 onPressed: () async {
-                  record.reference.updateData({'like' : false});
+//                  record.reference.updateData({'like' : false});
                 },
               )
               : IconButton(
                 icon: Icon(Icons.star_border),
                 color: Color(0xFFFFCA55),
                 onPressed: () async {
-                  record.reference.updateData({'like' : true});
+//                  record.reference.updateData({'like' : true});
                 },
               ),
               IconButton(
@@ -333,7 +341,7 @@ class _SearchPanelState extends State<SearchPanel> {
     return isOk;
   }
 
-  addSubjects(List<int> subjectsIdx, Record subject) {
+  addSubjects(List<int> subjectsIdx, Subjects subject) {
     super.setState(() {
       subjectsIdx.forEach((idx) => tt.subject[idx] = subject.code);
     });
@@ -349,6 +357,7 @@ class _SearchPanelState extends State<SearchPanel> {
   String _currentField;
   String _currentType;
   String _currentEng;
+  var _currentCredit = [];
 
   List<DropdownMenuItem<String>> getFacultyItems() {
     List<DropdownMenuItem<String>> facultyItems = List();
@@ -413,9 +422,41 @@ class _SearchPanelState extends State<SearchPanel> {
   bool val1 = false;
   bool val2 = false;
   bool val3 = false;
+  Widget checkbox(String title, bool boolValue) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(title),
+        Checkbox(
+          value: boolValue,
+          onChanged: (bool value) {
+            setState(() {
+              switch (title) {
+                case "0.5":
+                  val05 = value;
+                  break;
+                case "1":
+                  val1 = value;
+                  break;
+                case "2":
+                  val2 = value;
+                  break;
+                case "3":
+                  val3 = value;
+                  break;
+              }
+            });
+            if (value) _currentCredit.add(title);
+            else if (!value) _currentCredit.remove(title);
+//            print(_currentCredit);
+          },
+        )
+      ],
+    );
+  }
 
-  Future<void> filterDialog(BuildContext context) async {
-    return showDialog<void>(
+  Future<void> filterDialog(BuildContext context) async{
+    return showDialog<void> (
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
@@ -482,63 +523,10 @@ class _SearchPanelState extends State<SearchPanel> {
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Color(0xFF225B95), fontWeight: FontWeight.bold)),
                     ),
-                    //TODO checkbox for 0.5, 1, 2, 3, more
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("0.5"),
-                        Checkbox(
-                          value: val05,
-                          onChanged: (bool value) {
-                            setState(() {
-                              val05 = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("1"),
-                        Checkbox(
-                          value: val1,
-                          onChanged: (bool value) {
-                            setState(() {
-                              val1 = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("2"),
-                        Checkbox(
-                          value: val2,
-                          onChanged: (bool value) {
-                            setState(() {
-                              val2 = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text("3"),
-                        Checkbox(
-                          value: val3,
-                          onChanged: (bool value) {
-                            setState(() {
-                              val3 = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                    checkbox("0.5", val05),
+                    checkbox("1", val1),
+                    checkbox("2", val2),
+                    checkbox("3", val3),
                   ],
                 ),
                 Row(
@@ -582,11 +570,17 @@ class _SearchPanelState extends State<SearchPanel> {
                     color: Color(0xFFFFCA55),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                     onPressed: () {
-                      _searchFaculty = _currentFaculty;
-                      _searchField = _currentField;
-                      _searchType = _currentType;
-                      _searchEng = _currentEng;
+                      setState(() {
+                        _searchFaculty = _currentFaculty;
+                        _searchField = _currentField;
+                        _searchType = _currentType;
+                        if (_currentEng != "전체") _searchEng = int.parse(_currentEng);
+                        for(int i = 0; i < _currentCredit.length; i++) {
+                          _searchCredit.add(double.parse(_currentCredit[i]));
+                        }
+                      });
                       Navigator.pop(context) ;
+//                      initState();
                     },
                   ),
                 )
